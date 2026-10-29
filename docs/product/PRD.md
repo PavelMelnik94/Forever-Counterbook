@@ -17,7 +17,7 @@ Forever Counterbook provides a manually opened Matchup Card backed by a versione
 5. As a player, I want dangerous abilities and racial bonuses identified, so that I can prepare responses.
 6. As a player, I want CC, dispels, immunities, Defensive Windows, and resources-to-save explained, so that the advice is actionable.
 7. As a player, I want duel, world PvP, and battleground context separated, so that advice does not silently cross scenarios.
-8. As a player, I want three Threats, three Responses, one Attack Window, one Critical Error, and my reminders in compact view, so that preparation is fast.
+8. As a player, I want a two-panel Matchup Book with coverage on the left and the selected card, patch/source context, and personal notes on the right, so that learning remains navigable and honest about missing content.
 9. As a player, I want to open a card manually by target or search, so that the addon assists without automatic targeting.
 10. As a player, I want every Countermeasure labelled Confirmed, Assumption, or User Note, so that I know how much trust to place in it.
 11. As a maintainer, I want Confirmed guidance tied to Sources and a Patch Dataset, so that stale claims are reviewable.
@@ -43,6 +43,7 @@ Forever Counterbook provides a manually opened Matchup Card backed by a versione
 - A Matchup Card belongs to one Player Profile, Opponent Class, PvP Context, and Patch Dataset.
 - Full content supports strategic conditions, abilities, racial bonuses, control interactions, windows, stages, and scenario-specific advice.
 - Compact content presents at most three primary Threats and Responses plus one Attack Window and Critical Error.
+- The primary MVP UI is the two-panel Matchup Book; a compact PvP Card is a later optional mode.
 - Advice is never promoted to Confirmed without a Source accepted by project policy.
 
 ### Matchup Journal

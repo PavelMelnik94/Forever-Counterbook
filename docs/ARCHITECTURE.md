@@ -10,6 +10,8 @@ The Patch Dataset is declarative Lua loaded by the game. It contains localized t
 
 `PatchIntelligence.Evaluate(dataset, runtime, profileId)` is the freshness seam. It keeps schema version, Dataset Revision, addon version, patch identity, build, and interface distinct; returns `current` only for exact observed matches; and filters authored changes by Player Profile. `RuntimeInfo` is a thin WoW adapter: unavailable client evidence produces `unknown`, never an optimistic match.
 
+`MatchupDirectory.Build(dataset)` is the discovery seam. It expands declared profiles and Opponent Classes into deterministic Matchup Options, distinguishes Authored from Not Yet Authored without manufacturing empty cards, and indexes only declared profile, class, ability, race, and patch terms. `MatchupBookView` is the two-panel WoW adapter over that interface.
+
 ## Dependency direction
 
 ```text
@@ -22,6 +24,9 @@ SavedVariables adapter / in-memory test adapter
 Patch Dataset -> PatchIntelligence <- RuntimeInfo
                          |
                   PatchStatusView
+Patch Dataset -> MatchupDirectory <- tests
+                         |
+                  MatchupBookView
 ```
 
 The viewer knows the catalog, journal, and Patch Intelligence interfaces; core modules know nothing about frames, locale, or combat APIs. `PatchStatusView` and `RuntimeInfo` contain the WoW-specific presentation and observation details.

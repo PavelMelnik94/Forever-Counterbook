@@ -50,6 +50,12 @@ end
 
 SLASH_FOREVERCOUNTERBOOK1 = "/fcb"
 SlashCmdList.FOREVERCOUNTERBOOK = function(message)
+  local bookProfile = string.match(message or "", "^book%s+(%S+)$")
+  if bookProfile then ForeverCounterbook.ShowMatchupBook(string.lower(bookProfile)); return end
+  local searchQuery = string.match(message or "", "^search%s+(.+)$")
+  if searchQuery then ForeverCounterbook.ShowMatchupSearch(searchQuery); return end
+  local openProfile, openOpponent = string.match(message or "", "^open%s+(%S+)%s+(%S+)$")
+  if openProfile then ForeverCounterbook.OpenMatchupOption(string.lower(openProfile), string.lower(openOpponent)); return end
   local patchProfile = string.match(message or "", "^patch%s+(%S+)$")
   if patchProfile then ForeverCounterbook.ShowPatchStatus(string.lower(patchProfile)); return end
   if message == "notes" then showCurrentNotes(); return end

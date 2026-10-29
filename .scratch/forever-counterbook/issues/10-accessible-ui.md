@@ -10,4 +10,5 @@
 - [ ] Colorblind-safe status encoding never relies on color alone.
 - [ ] Keybinds do not automate targeting or combat actions.
 - [ ] Diagnostics expose versions and validation errors without personal journal content.
+- [ ] An optional compact PvP Card mode complements the primary two-panel Matchup Book without replacing it.
 

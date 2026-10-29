@@ -11,6 +11,7 @@ The addon is not a DR tracker, cooldown bar, kill feed, damage meter, enemy-stat
 - English and Russian locale foundation.
 - Minimal in-game viewer for the illustrative Restoration Shaman vs Warrior card.
 - Manually saved Matchup Journal notes backed by SavedVariables.
+- Two-panel Matchup Book with deterministic RU/EN search and explicit authored/missing coverage.
 - Offline Lua syntax and catalog behavior checks.
 
 The included gameplay prompts are labelled as assumptions or user reflection prompts; they are not yet verified matchup claims.
@@ -23,6 +24,11 @@ The included gameplay prompts are labelled as assumptions or user reflection pro
 4. Run `/fcb resto_shaman warrior`.
 5. Run `/fcb note <text>` to save a note for the open card and `/fcb notes` to read its notes.
 6. Run `/fcb patch resto_shaman` to see Dataset Revision, supported build/interface, freshness, and authored profile changes.
+7. Run `/fcb book resto_shaman` to open the Matchup Book.
+8. Search with `/fcb search <query>`. Scoped examples: `class:воин`, `ability:<name>`, `race:<name>`, and `patch:1.60.1`.
+9. Run `/fcb open <profile> <class>` to open one Matchup Option directly.
+
+The bundled inventory currently declares 54 profile/class options: one Authored card and 53 Not Yet Authored options. Ability and race searches intentionally return no bundled results until sourced metadata is authored.
 
 ## Develop and verify
 

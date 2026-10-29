@@ -44,6 +44,16 @@ Committed Player Profiles are Restoration Shaman, Enhancement Shaman as a levell
 - A Confirmed profile change must reference a known Source.
 - Actual `GetBuildInfo` behavior and rendering remain an in-client smoke test.
 
+## Matchup Book and search slice
+
+- `/fcb book <profile>` opens the primary two-panel Matchup Book.
+- The top panel identifies the Player Profile and provides manual search; the left panel lists Matchup Options and their Authored or Not Yet Authored status; the right panel renders the selected Matchup Card, missing sections, patch/source context, and personal notes.
+- `/fcb search <query>` supports deterministic profile aliases plus scoped `class:`, `ability:`, `race:`, and `patch:` queries without target reads.
+- `/fcb open <profile> <class>` opens one option directly; missing content remains Not Yet Authored and never becomes a placeholder Matchup Card.
+- Six profiles across nine Opponent Classes produce 54 declared options. The bundled dataset currently has one Authored card and 53 Not Yet Authored options.
+- Ability/race behavior is tested with fixtures; bundled ability/race terms stay empty until Source-backed metadata is authored.
+- Compact PvP Card is a future additional mode, not part of this slice.
+
 ## Out of scope
 
 - Reading restricted enemy auras, cooldowns, talents, or protected state.

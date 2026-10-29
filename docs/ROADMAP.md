@@ -18,9 +18,9 @@ Add manual Encounter Result, cause, Mistake Tags, history, and local summaries, 
 
 Compare the previously seen dataset revision with the bundled revision and show a short, authored “what changed for my Player Profile” summary. Do not infer changes by diffing prose at runtime.
 
-### Slice 5 — MVP content breadth and search
+### Slice 5 — MVP Matchup Book, inventory, and search (implemented; client smoke test pending)
 
-Add cards for Restoration Shaman, Enhancement Shaman levelling, SL/SL Warlock, Arms Warrior PvP damage, Restoration Druid, and Restoration/Balance Druid, then manual search and compact/full card views. Every Confirmed Countermeasure must cite an accepted Source.
+Declare coverage for Restoration Shaman, Enhancement Shaman levelling, SL/SL Warlock, Arms Warrior PvP damage, Restoration Druid, and Restoration/Balance Druid; provide deterministic manual search and the two-panel Matchup Book. Every Confirmed Countermeasure must cite an accepted Source.
 
 All current Player Profiles have an explicit build or role. Gameplay guidance still requires evidence review before content enters the Patch Dataset.
 
@@ -32,6 +32,7 @@ Add profile preparation checklists, then manual outcome capture and only client-
 
 - Cover all nine classes and relevant races after profile decisions.
 - Add extended local statistics and polished accessible UI.
+- Add an optional compact PvP Card mode alongside the primary Matchup Book.
 
 ## 1.x
 

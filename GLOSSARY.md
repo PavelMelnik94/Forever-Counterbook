@@ -8,6 +8,22 @@ This context describes the patch-aware PvP knowledge and personal learning conce
 A concise preparation view for one Player Profile facing one Opponent Class in one Patch Dataset.
 _Avoid_: guide, tier list
 
+**Matchup Book**:
+The primary two-panel browsing view: Matchup Options and coverage status on the left, the selected Matchup Card and personal learning context on the right.
+_Avoid_: automatic target helper, compact overlay
+
+**Matchup Option**:
+One declared Player Profile and Opponent Class pair whose content status is Authored or Not Yet Authored.
+_Avoid_: empty Matchup Card
+
+**Authored**:
+A content status meaning a Matchup Card exists for the Matchup Option; it does not imply that every section is complete or Confirmed.
+_Avoid_: verified, complete
+
+**Not Yet Authored**:
+A content status meaning no Matchup Card exists for the Matchup Option.
+_Avoid_: empty guide, assumption
+
 **Player Profile**:
 A named class-and-build perspective from which Matchup Cards are written, such as Restoration Shaman, Arms Warrior, or Restoration Druid.
 _Avoid_: character, spec preset
