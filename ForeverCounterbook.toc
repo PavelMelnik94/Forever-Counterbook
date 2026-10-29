@@ -1,0 +1,14 @@
+## Interface: 16001
+## Title: Forever Counterbook
+## Notes: Patch-aware PvP matchup reference and personal learning journal
+## Notes-ruRU: PvP-справочник по матчапам и личный журнал обучения
+## Author: Forever Counterbook contributors
+## Version: 0.1.0-dev
+## SavedVariables: ForeverCounterbookDB
+
+src/Bootstrap.lua
+src/Locales.lua
+src/MatchupCatalog.lua
+src/data/16001.lua
+src/CardView.lua
+
