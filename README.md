@@ -22,6 +22,7 @@ The included gameplay prompts are labelled as assumptions or user reflection pro
 3. Start or reload the WoW: Forever 1.60.1 client and enable **Forever Counterbook**.
 4. Run `/fcb resto_shaman warrior`.
 5. Run `/fcb note <text>` to save a note for the open card and `/fcb notes` to read its notes.
+6. Run `/fcb patch resto_shaman` to see Dataset Revision, supported build/interface, freshness, and authored profile changes.
 
 ## Develop and verify
 

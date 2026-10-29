@@ -11,6 +11,9 @@ src/Locales.lua
 src/MatchupCatalog.lua
 src/MatchupJournal.lua
 src/SavedVariablesStorage.lua
+src/PatchIntelligence.lua
+src/RuntimeInfo.lua
 src/data/16001.lua
+src/PatchStatusView.lua
 src/CardView.lua
 

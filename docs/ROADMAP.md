@@ -14,7 +14,7 @@ Let the player open the current card, manually record one observation or mistake
 
 Add manual Encounter Result, cause, Mistake Tags, history, and local summaries, followed by explicit export/import.
 
-### Slice 4 — profile-aware dataset changes
+### Slice 4 — profile-aware dataset changes (implemented; client smoke test pending)
 
 Compare the previously seen dataset revision with the bundled revision and show a short, authored “what changed for my Player Profile” summary. Do not infer changes by diffing prose at runtime.
 

@@ -36,6 +36,14 @@ Committed Player Profiles are Restoration Shaman, Enhancement Shaman as a levell
 - The core Journal is tested through its public interface using in-memory storage.
 - No outcome, tags, statistics, combat-event detection, or automatic post-fight prompt is included in this slice.
 
+## Patch Intelligence slice
+
+- `/fcb patch <profile>` shows Dataset Revision, patch identity, addon version, supported build/interface, and freshness.
+- Exact observed client version, raw build, and interface matches return `current`; a known mismatch returns `stale`; missing runtime evidence returns `unknown` with a warning.
+- Profile changes are authored Patch Dataset entries, filtered by Player Profile, and never inferred by diffing prose.
+- A Confirmed profile change must reference a known Source.
+- Actual `GetBuildInfo` behavior and rendering remain an in-client smoke test.
+
 ## Out of scope
 
 - Reading restricted enemy auras, cooldowns, talents, or protected state.

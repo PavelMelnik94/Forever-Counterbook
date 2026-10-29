@@ -50,6 +50,8 @@ end
 
 SLASH_FOREVERCOUNTERBOOK1 = "/fcb"
 SlashCmdList.FOREVERCOUNTERBOOK = function(message)
+  local patchProfile = string.match(message or "", "^patch%s+(%S+)$")
+  if patchProfile then ForeverCounterbook.ShowPatchStatus(string.lower(patchProfile)); return end
   if message == "notes" then showCurrentNotes(); return end
   local noteText = string.match(message or "", "^note%s+(.+)$")
   if noteText then addCurrentNote(noteText); return end

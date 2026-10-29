@@ -8,6 +8,8 @@ The Patch Dataset is declarative Lua loaded by the game. It contains localized t
 
 `MatchupJournal.New(storage)` is the personal-learning seam. It owns Journal Entry validation, identifiers, filtering, and serializable state. The SavedVariables adapter maps that state to `ForeverCounterbookDB.journal`; tests use an in-memory adapter. Neither adapter contains journal rules.
 
+`PatchIntelligence.Evaluate(dataset, runtime, profileId)` is the freshness seam. It keeps schema version, Dataset Revision, addon version, patch identity, build, and interface distinct; returns `current` only for exact observed matches; and filters authored changes by Player Profile. `RuntimeInfo` is a thin WoW adapter: unavailable client evidence produces `unknown`, never an optimistic match.
+
 ## Dependency direction
 
 ```text
@@ -17,9 +19,12 @@ Locales ----------> CardView <- WoW UI / slash command
 MatchupJournal <--- CardView
       ^
 SavedVariables adapter / in-memory test adapter
+Patch Dataset -> PatchIntelligence <- RuntimeInfo
+                         |
+                  PatchStatusView
 ```
 
-The viewer knows the catalog and journal interfaces; both core modules know nothing about frames, locale, or combat APIs. Dataset-change summaries should become a separate module referencing stable profile and matchup keys.
+The viewer knows the catalog, journal, and Patch Intelligence interfaces; core modules know nothing about frames, locale, or combat APIs. `PatchStatusView` and `RuntimeInfo` contain the WoW-specific presentation and observation details.
 
 ## Data evolution
 

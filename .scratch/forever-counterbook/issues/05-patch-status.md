@@ -4,10 +4,11 @@
 
 **Blocked by:** 01: Versioned Matchup Card viewer.
 
-**Status:** ready-for-agent
+**Status:** implemented; client smoke test pending
 
-- [ ] Schema version, Dataset Revision, addon build, and patch identity are distinct.
-- [ ] Unknown applicability produces a Stale Warning rather than a guess.
-- [ ] Change summaries are authored data and filtered by Player Profile.
-- [ ] Status is visible in RU and EN.
+- [x] Schema version, Dataset Revision, addon build, and patch identity are distinct.
+- [x] Unknown applicability produces a Stale Warning rather than a guess.
+- [x] Change summaries are authored data and filtered by Player Profile.
+- [x] Status is visible in RU and EN.
+- [ ] `GetBuildInfo` values and status rendering are smoke-tested in Forever 1.60.1.
 
