@@ -74,6 +74,184 @@ test("SavedVariables adapter restores notes for a new Journal instance", functio
   equal(secondJournal:GetNotes("resto_shaman:warrior")[1].text, "Save Grounding Totem for the planned spell.")
 end)
 
+test("exports only personal Journal notes in deterministic versioned text", function()
+  local persisted
+  local storage = { Load = function() return persisted end, Save = function(_, state) persisted = state end }
+  local journal = ForeverCounterbook.MatchupJournal.New(storage)
+  journal:AddNote("p:c", "Note")
+  journal:AddNote("a:b", "Second")
+  local payload, err = journal:Export()
+  equal(err, nil)
+  equal(payload, "FCBJ1\n703A63|4E6F7465\n613A62|5365636F6E64")
+  equal(string.find(payload, "encounterHistory", 1, true), nil)
+  equal(string.find(payload, "briefingChecklist", 1, true), nil)
+end)
+
+test("previews and atomically applies Journal merge with normalized deduplication", function()
+  local persisted, saves
+  local storage = {
+    Load = function() return persisted end,
+    Save = function(_, state) persisted = state; saves = (saves or 0) + 1 end,
+  }
+  local journal = ForeverCounterbook.MatchupJournal.New(storage)
+  journal:AddNote("p:c", "Note")
+  saves = 0
+  local payload = "FCBJ1\n703A63|20204E6F74652020\n613A62|5365636F6E64"
+  local preview, err = journal:PreviewImport(payload, "merge")
+  equal(err, nil)
+  equal(preview.mode, "merge")
+  equal(preview.existingCount, 1)
+  equal(preview.incomingCount, 2)
+  equal(preview.addedCount, 1)
+  equal(preview.duplicateCount, 1)
+  equal(preview.resultingCount, 2)
+  equal(saves, 0)
+  equal(#journal:GetNotes("a:b"), 0)
+
+  local applied, applyError = journal:ApplyImport()
+  equal(applyError, nil)
+  equal(applied.resultingCount, 2)
+  equal(saves, 1)
+  equal(journal:GetNotes("p:c")[1].id, 1)
+  equal(journal:GetNotes("a:b")[1].id, 2)
+  equal(journal:GetNotes("a:b")[1].text, "Second")
+end)
+
+test("replaces only Journal notes after preview and ignores imported identity", function()
+  ForeverCounterbookDB = {
+    encounterHistory = { marker = "keep" }, briefingChecklist = { marker = "keep" },
+    uiSettings = { marker = "keep" }, authoredKnowledge = { marker = "keep" },
+  }
+  local journal = ForeverCounterbook.MatchupJournal.New(ForeverCounterbook.SavedVariablesStorage.New())
+  journal:AddNote("local:key", "Remove this note.")
+  local payload = table.concat({
+    "FCBJ1",
+    "703A63|4E6F7465",
+    "703A63|20204E6F74652020",
+    "613A62|5365636F6E64",
+  }, "\n")
+  local preview, err = journal:PreviewImport(payload, "replace")
+  equal(err, nil)
+  equal(preview.existingCount, 1)
+  equal(preview.incomingCount, 3)
+  equal(preview.addedCount, 2)
+  equal(preview.duplicateCount, 1)
+  equal(preview.resultingCount, 2)
+  equal(journal:GetNotes("local:key")[1].text, "Remove this note.")
+
+  local applied, applyError = journal:ApplyImport()
+  equal(applyError, nil)
+  equal(applied.mode, "replace")
+  equal(#journal:GetNotes("local:key"), 0)
+  equal(journal:GetNotes("p:c")[1].id, 1)
+  equal(journal:GetNotes("a:b")[1].id, 2)
+  equal(ForeverCounterbookDB.encounterHistory.marker, "keep")
+  equal(ForeverCounterbookDB.briefingChecklist.marker, "keep")
+  equal(ForeverCounterbookDB.uiSettings.marker, "keep")
+  equal(ForeverCounterbookDB.authoredKnowledge.marker, "keep")
+end)
+
+test("rejects oversized or malformed Journal imports atomically and clears pending preview", function()
+  local persisted, saves
+  local storage = {
+    Load = function() return persisted end,
+    Save = function(_, state) persisted = state; saves = (saves or 0) + 1 end,
+  }
+  local journal = ForeverCounterbook.MatchupJournal.New(storage)
+  journal:AddNote("local:key", "Keep this note.")
+  saves = 0
+  local valid = journal:PreviewImport("FCBJ1\n703A63|4E6F7465", "merge")
+  equal(valid.incomingCount, 1)
+
+  local preview, err = journal:PreviewImport(string.rep("A", 65536), "merge")
+  equal(preview, nil)
+  equal(err.code, "journal_import_too_large")
+  local applied, applyError = journal:ApplyImport()
+  equal(applied, nil)
+  equal(applyError.code, "no_pending_journal_import")
+  equal(saves, 0)
+  equal(journal:GetNotes("local:key")[1].text, "Keep this note.")
+
+  preview, err = journal:PreviewImport("FCBJ1\n703a63|4E6F7465", "merge")
+  equal(preview, nil)
+  equal(err.code, "invalid_journal_import")
+  preview, err = journal:PreviewImport("FCBJ1\n703A63|00", "merge")
+  equal(preview, nil)
+  equal(err.code, "invalid_journal_import")
+  preview, err = journal:PreviewImport("FCBJ2", "replace")
+  equal(preview, nil)
+  equal(err.code, "unsupported_journal_import")
+  equal(saves, 0)
+end)
+
+test("invalidates pending Journal import when a local note changes", function()
+  local persisted
+  local storage = { Load = function() return persisted end, Save = function(_, state) persisted = state end }
+  local journal = ForeverCounterbook.MatchupJournal.New(storage)
+  local preview = journal:PreviewImport("FCBJ1\n703A63|4E6F7465", "merge")
+  equal(preview.incomingCount, 1)
+  journal:AddNote("local:key", "New local note.")
+  local applied, err = journal:ApplyImport()
+  equal(applied, nil)
+  equal(err.code, "no_pending_journal_import")
+  equal(#journal:GetNotes("p:c"), 0)
+end)
+
+test("protects Journal and pending import from caller-owned entry mutation", function()
+  local persisted
+  local storage = { Load = function() return persisted end, Save = function(_, state) persisted = state end }
+  local journal = ForeverCounterbook.MatchupJournal.New(storage)
+  local added = journal:AddNote("p:c", "Original")
+  journal:PreviewImport("FCBJ1\n613A62|5365636F6E64", "merge")
+  added.text = "Mutated"
+  local listed = journal:GetNotes("p:c")
+  listed[1].text = "Also mutated"
+  equal(journal:GetNotes("p:c")[1].text, "Original")
+  local applied, err = journal:ApplyImport()
+  equal(err, nil)
+  equal(applied.resultingCount, 2)
+  equal(journal:GetNotes("p:c")[1].text, "Original")
+end)
+
+test("round-trips Cyrillic and multiline Journal text without executing it", function()
+  local sourceState, targetState
+  local source = ForeverCounterbook.MatchupJournal.New({
+    Load = function() return sourceState end, Save = function(_, state) sourceState = state end,
+  })
+  local text = "Не нажимать loadstring().\nВторая строка."
+  source:AddNote("resto_shaman:warrior", text)
+  local payload = source:Export()
+  local target = ForeverCounterbook.MatchupJournal.New({
+    Load = function() return targetState end, Save = function(_, state) targetState = state end,
+  })
+  local preview, err = target:PreviewImport(payload .. "\n", "replace")
+  equal(err, nil)
+  equal(preview.incomingCount, 1)
+  target:ApplyImport()
+  equal(target:GetNotes("resto_shaman:warrior")[1].text, text)
+end)
+
+test("allows explicit empty replace and rejects oversized Journal export", function()
+  local persisted
+  local storage = { Load = function() return persisted end, Save = function(_, state) persisted = state end }
+  local journal = ForeverCounterbook.MatchupJournal.New(storage)
+  journal:AddNote("p:c", "Remove me.")
+  local preview = journal:PreviewImport("FCBJ1", "replace")
+  equal(preview.resultingCount, 0)
+  journal:ApplyImport()
+  equal(#journal:GetNotes("p:c"), 0)
+
+  local entries = {}
+  for id = 1, 9 do
+    entries[id] = { id = id, matchupKey = "p:c", text = string.rep("x", 4096) }
+  end
+  persisted = { schemaVersion = 1, nextId = 10, entries = entries }
+  local oversized = ForeverCounterbook.MatchupJournal.New(storage)
+  local payload, err = oversized:Export()
+  equal(payload, nil)
+  equal(err.code, "journal_export_too_large")
+end)
+
 test("records manual Encounter Results and filters history by Matchup Key", function()
   local persisted
   local storage = { Load = function() return persisted end, Save = function(_, state) persisted = state end }

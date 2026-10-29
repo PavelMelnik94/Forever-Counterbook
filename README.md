@@ -36,12 +36,17 @@ The included gameplay prompts are labelled as assumptions or user reflection pro
 14. In Key Bindings, assign **Open or close Matchup Book** or **Open selected compact card**. These bindings only open local UI and never target or act in combat.
 15. Select a Matchup Option in the book, then record a result with `/fcb encounter <win|loss> <cause> | <tags> | <note>`. Separate multiple tags with commas; allowed tags are `positioning`, `consumables`, `cc`, `dispel`, `cooldown`, and `target_choice`.
 16. Run `/fcb history` to list manual Encounter Results for the selected Matchup Key.
+17. Run `/fcb journal export` to open a selectable `FCBJ1` backup of Journal notes only.
+18. Run `/fcb journal import`, paste the backup, then use `/fcb journal import preview merge` or `/fcb journal import preview replace`.
+19. Confirm the validated preview with `/fcb journal import apply`. Editing the transfer field or adding a local note cancels the pending preview.
 
 The bundled inventory currently declares 54 profile/class options: one Authored card and 53 Not Yet Authored options. Ability and race searches intentionally return no bundled results until sourced metadata is authored.
 
 All bundled Briefing Requirement sections are currently Not Yet Authored. The private checklist is local user state and never becomes distributed Evidence. No action-bar, bag, gear, aura, or combat-state inspection is performed.
 
 Encounter History is also private local state. Results and causes are accepted only from the explicit command; the addon does not inspect combat logs, targets, auras, or infer victory or defeat.
+
+Journal Transfer never includes Encounter History, the private Briefing checklist, UI settings, or authored knowledge. Merge keeps local notes and skips duplicates by Matchup Key plus whitespace-normalized note text; imported notes that are actually added receive fresh local IDs. Replace affects only Journal notes and requires preview plus explicit apply.
 
 ## Develop and verify
 

@@ -44,6 +44,15 @@ Committed Player Profiles are Restoration Shaman, Enhancement Shaman as a levell
 - Versioned Encounter History validates completely before use and persists separately from Matchup Journal notes, the Private Checklist, UI settings, and authored knowledge.
 - No timestamp, deletion, limit, inferred outcome, combat-log read, target read, or telemetry is included. Actual frame rendering, Cyrillic input, commands, and `/reload` persistence remain an in-client smoke test.
 
+## Safe Journal Transfer slice
+
+- `FCBJ1` is a deterministic text format: an exact version header followed by one uppercase-hex `MatchupKey|note` line per Journal Entry in local order. Internal IDs are never exported or trusted.
+- Export/import includes only Matchup Journal notes. Encounter History, Briefing checklist, UI settings, and authored knowledge are outside the format.
+- Payloads are limited to 65,535 bytes, 1,000 entries, 128-byte stable Matchup Keys, and 4,096-byte notes. Malformed hex, unknown versions, control bytes, sparse/corrupt state, and excess limits are rejected without mutation.
+- Merge preserves local notes, skips duplicates by Matchup Key plus whitespace-normalized note text, and assigns fresh IDs to additions. Replace rebuilds only Journal notes, including an explicitly previewed empty replacement.
+- Preview performs no write. Apply commits only the retained validated candidate; editing the field, adding a local note, a failed preview, or a prior apply invalidates it.
+- `/fcb journal export`, `/fcb journal import`, `/fcb journal import preview merge|replace`, and `/fcb journal import apply` drive a local copy/paste field. The field accepts one byte beyond the core limit so oversized input is rejected rather than silently truncated. Legacy EditBox behavior and `/reload` persistence remain an in-client smoke test.
+
 ## Patch Intelligence slice
 
 - `/fcb patch <profile>` shows Dataset Revision, patch identity, addon version, supported build/interface, and freshness.

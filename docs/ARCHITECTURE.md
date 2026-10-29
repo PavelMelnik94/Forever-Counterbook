@@ -6,7 +6,9 @@
 
 The Patch Dataset is declarative Lua loaded by the game. It contains localized text keys rather than executable behavior. `CardView` is the first WoW adapter. It translates a slash command into a catalog lookup and renders only declared card content. It does not inspect combat state. Locales are another adapter selected by the client locale with English fallback.
 
-`MatchupJournal.New(storage)` is the personal-learning seam. It owns Journal Entry validation, identifiers, filtering, and serializable state. The SavedVariables adapter maps that state to `ForeverCounterbookDB.journal`; tests use an in-memory adapter. Neither adapter contains journal rules.
+`MatchupJournal.New(storage)` is the personal-learning seam. It owns Journal Entry validation, identifiers, filtering, serializable state, and the `FCBJ1` Journal Transfer codec. Export is deterministic; import parses untrusted text without code execution, validates before mutation, and retains a private pending candidate until explicit apply. Merge deduplicates by Matchup Key plus whitespace-normalized note text and assigns fresh local IDs; replace rebuilds only Journal notes. The SavedVariables adapter maps that state to `ForeverCounterbookDB.journal`; tests use an in-memory adapter. Neither adapter contains journal rules.
+
+`JournalTransferView` is the WoW copy/paste adapter. It exposes a bounded multiline field and localized preview counts, never imported note contents. Editing the field or adding a local note invalidates the pending import.
 
 `EncounterHistory.New(storage)` is the structured personal-history seam. Its two-method interface records a manually supplied win/loss, cause, controlled Mistake Tags, and note, then lists entries by Matchup Key. It validates the complete versioned state before use and maps only to `ForeverCounterbookDB.encounterHistory`; no migration is required, so existing note-only Journal Entries remain readable. Encounter History is private state, never Evidence or inferred combat data.
 

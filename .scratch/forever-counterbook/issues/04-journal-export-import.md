@@ -4,10 +4,11 @@
 
 **Blocked by:** 03: Structured encounter history.
 
-**Status:** ready-for-agent
+**Status:** implemented; client smoke test pending
 
-- [ ] Export contains a version and only personal journal data.
-- [ ] Invalid or incompatible imports are rejected without modifying existing data.
-- [ ] Merge and replace behavior is explicit and tested.
-- [ ] No network or telemetry is introduced.
+- [x] Export contains a version and only personal journal data.
+- [x] Invalid or incompatible imports are rejected without modifying existing data.
+- [x] Merge and replace behavior is explicit and tested.
+- [x] No network or telemetry is introduced.
+- [ ] Smoke-test multiline copy/paste, RU/EN and Cyrillic, preview/apply, merge/replace, a 65,536-byte paste rejecting without truncation, and `/reload` persistence in Forever 1.60.1.
 

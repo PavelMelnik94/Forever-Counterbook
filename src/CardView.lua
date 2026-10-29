@@ -71,6 +71,11 @@ end
 
 SLASH_FOREVERCOUNTERBOOK1 = "/fcb"
 SlashCmdList.FOREVERCOUNTERBOOK = function(message)
+  if message == "journal export" then ForeverCounterbook.ShowJournalExport(); return end
+  if message == "journal import" then ForeverCounterbook.ShowJournalImport(); return end
+  local journalImportMode = string.match(message or "", "^journal%s+import%s+preview%s+(%S+)$")
+  if journalImportMode then ForeverCounterbook.PreviewJournalImport(string.lower(journalImportMode)); return end
+  if message == "journal import apply" then ForeverCounterbook.ApplyJournalImport(); return end
   local encounterResult, encounterCause, encounterTags, encounterNote = string.match(
     message or "", "^encounter%s+(%S+)%s+(.-)%s*|%s*(.-)%s*|%s*(.-)%s*$"
   )

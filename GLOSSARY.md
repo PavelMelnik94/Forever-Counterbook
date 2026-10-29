@@ -83,6 +83,10 @@ _Avoid_: combat log, telemetry
 One player-authored note attached to a Matchup Card.
 _Avoid_: evidence, combat event
 
+**Journal Transfer**:
+An explicit local backup or restore of private Journal Entries with a visible merge or replace choice.
+_Avoid_: sync, Knowledge Pack, telemetry
+
 **Encounter History**:
 The player's private collection of manually recorded Encounter Results, causes, Mistake Tags, and notes for a Matchup Key; it remains separate from Matchup Journal notes and distributed knowledge.
 _Avoid_: combat log, evidence, telemetry

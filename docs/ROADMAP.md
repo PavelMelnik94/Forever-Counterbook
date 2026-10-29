@@ -14,6 +14,10 @@ Let the player open the current card, manually record one observation or mistake
 
 Add manual Encounter Result, cause, Mistake Tags, and Matchup Key history in separate validated local storage. Local summaries and explicit export/import remain later slices.
 
+### Slice 3b — safe Journal export/import (implemented; client smoke test pending)
+
+Back up and restore private Journal notes through deterministic `FCBJ1` text, strict validation, explicit merge/replace preview, and atomic apply. No network or telemetry is involved.
+
 ### Slice 4 — profile-aware dataset changes (implemented; client smoke test pending)
 
 Compare the previously seen dataset revision with the bundled revision and show a short, authored “what changed for my Player Profile” summary. Do not infer changes by diffing prose at runtime.

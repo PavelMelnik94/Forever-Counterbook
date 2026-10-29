@@ -102,7 +102,7 @@ See [Constraints and non-goals](CONSTRAINTS.md).
 ## Open Decisions
 
 - Evidence policy for Confirmed gameplay guidance.
-- Journal retention, export encoding, and conflict behavior.
+- Journal retention policy.
 - Exact Forever client capabilities for target lookup, action bars, Death Recap, and addon channels.
 - External support-page URL.
 
