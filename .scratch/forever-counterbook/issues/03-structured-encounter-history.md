@@ -4,10 +4,11 @@
 
 **Blocked by:** 02: Persistent Matchup Journal note.
 
-**Status:** ready-for-agent
+**Status:** implemented; client smoke test pending
 
-- [ ] Entry creation remains manual and accepts win/loss, cause, and controlled Mistake Tags.
-- [ ] History is filtered by Matchup Key and survives reload.
-- [ ] Existing note-only entries remain readable.
-- [ ] RU and EN labels are complete.
+- [x] Entry creation remains manual and accepts win/loss, cause, and controlled Mistake Tags.
+- [x] History is filtered by Matchup Key and survives reload through the storage seam.
+- [x] Existing note-only entries remain readable.
+- [x] RU and EN labels are complete.
+- [ ] Smoke-test commands, selected-card rendering, Cyrillic text, and SavedVariables persistence after `/reload` in Forever 1.60.1.
 

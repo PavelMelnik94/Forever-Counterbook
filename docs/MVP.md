@@ -36,6 +36,14 @@ Committed Player Profiles are Restoration Shaman, Enhancement Shaman as a levell
 - The core Journal is tested through its public interface using in-memory storage.
 - No outcome, tags, statistics, combat-event detection, or automatic post-fight prompt is included in this slice.
 
+## Structured Encounter History slice
+
+- After explicitly selecting a Matchup Option, `/fcb encounter <win|loss> <cause> | <tags> | <note>` records one manual Encounter Result.
+- Allowed Mistake Tags are positioning, consumables, CC, dispel, cooldown, and target choice; arbitrary or duplicate tags are rejected.
+- `/fcb history` and the selected book card show only entries for that Matchup Key, with RU/EN labels.
+- Versioned Encounter History validates completely before use and persists separately from Matchup Journal notes, the Private Checklist, UI settings, and authored knowledge.
+- No timestamp, deletion, limit, inferred outcome, combat-log read, target read, or telemetry is included. Actual frame rendering, Cyrillic input, commands, and `/reload` persistence remain an in-client smoke test.
+
 ## Patch Intelligence slice
 
 - `/fcb patch <profile>` shows Dataset Revision, patch identity, addon version, supported build/interface, and freshness.

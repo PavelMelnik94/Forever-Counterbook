@@ -11,6 +11,7 @@ The addon is not a DR tracker, cooldown bar, kill feed, damage meter, enemy-stat
 - English and Russian locale foundation.
 - Minimal in-game viewer for the illustrative Restoration Shaman vs Warrior card.
 - Manually saved Matchup Journal notes backed by SavedVariables.
+- Manually recorded Encounter History with win/loss, cause, controlled Mistake Tags, and a note in separate local storage.
 - Two-panel Matchup Book with deterministic RU/EN search and explicit authored/missing coverage.
 - Persistent book/compact layout, scale, position, accessible themes, safe keybindings, and privacy-safe diagnostics.
 - Offline Lua syntax and catalog behavior checks.
@@ -33,10 +34,14 @@ The included gameplay prompts are labelled as assumptions or user reflection pro
 12. Configure the viewer with `/fcb ui layout book|compact`, `/fcb ui scale 0.6-1.6`, and `/fcb ui theme default|high_contrast|colorblind`.
 13. Run `/fcb diagnostics` to print version, patch, client, and validation status without journal or checklist content.
 14. In Key Bindings, assign **Open or close Matchup Book** or **Open selected compact card**. These bindings only open local UI and never target or act in combat.
+15. Select a Matchup Option in the book, then record a result with `/fcb encounter <win|loss> <cause> | <tags> | <note>`. Separate multiple tags with commas; allowed tags are `positioning`, `consumables`, `cc`, `dispel`, `cooldown`, and `target_choice`.
+16. Run `/fcb history` to list manual Encounter Results for the selected Matchup Key.
 
 The bundled inventory currently declares 54 profile/class options: one Authored card and 53 Not Yet Authored options. Ability and race searches intentionally return no bundled results until sourced metadata is authored.
 
 All bundled Briefing Requirement sections are currently Not Yet Authored. The private checklist is local user state and never becomes distributed Evidence. No action-bar, bag, gear, aura, or combat-state inspection is performed.
+
+Encounter History is also private local state. Results and causes are accepted only from the explicit command; the addon does not inspect combat logs, targets, auras, or infer victory or defeat.
 
 ## Develop and verify
 

@@ -7,6 +7,11 @@ local checklist, checklistError = ForeverCounterbook.BriefingChecklist.New(
 )
 ForeverCounterbook.BriefingChecklistState = checklist
 ForeverCounterbook.BriefingChecklistError = checklistError
+local encounterHistory, encounterHistoryError = ForeverCounterbook.EncounterHistory.New(
+  ForeverCounterbook.SavedVariablesStorage.NewEncounterHistory()
+)
+ForeverCounterbook.EncounterHistoryState = encounterHistory
+ForeverCounterbook.EncounterHistoryError = encounterHistoryError
 local uiSettings, uiSettingsError = ForeverCounterbook.UISettings.New(ForeverCounterbook.SavedVariablesStorage.NewUISettings())
 ForeverCounterbook.ViewerSettings = uiSettings
 ForeverCounterbook.ViewerSettingsError = uiSettingsError
@@ -18,6 +23,26 @@ local currentOptions = {}
 local currentPage = 1
 local PAGE_SIZE = 9
 local selectedOption
+
+local function encounterLine(entry)
+  local tags = {}
+  for _, tag in ipairs(entry.tags) do table.insert(tags, ForeverCounterbook.Text("mistake_" .. tag)) end
+  return "#" .. entry.id .. " [" .. ForeverCounterbook.Text("encounter_result_" .. entry.result) .. "] "
+    .. ForeverCounterbook.Text("encounter_cause") .. ": " .. entry.cause .. " | "
+    .. ForeverCounterbook.Text("encounter_tags") .. ": " .. table.concat(tags, ", ") .. " | "
+    .. ForeverCounterbook.Text("encounter_note") .. ": " .. entry.note
+end
+
+local function appendEncounterHistory(lines, matchupKey)
+  table.insert(lines, "\n" .. ForeverCounterbook.Text("encounter_title") .. ":")
+  if not encounterHistory then
+    table.insert(lines, "Forever Counterbook: " .. encounterHistoryError.code)
+    return
+  end
+  local entries = encounterHistory:List(matchupKey)
+  if next(entries) == nil then table.insert(lines, ForeverCounterbook.Text("encounter_empty")) end
+  for _, entry in ipairs(entries) do table.insert(lines, encounterLine(entry)) end
+end
 
 local function appendBriefing(lines, profileId)
   local briefing, err = ForeverCounterbook.PvPBriefing.Build(
@@ -132,6 +157,7 @@ local function renderOption(option)
       ForeverCounterbook.Text("book_not_authored"),
       "\n" .. ForeverCounterbook.Text("patch_status_dataset") .. ": " .. ForeverCounterbook.Data16001.datasetRevision,
     }
+    appendEncounterHistory(missingLines, option.key)
     appendBriefing(missingLines, option.profileId)
     view.cardBody:SetText(table.concat(missingLines, "\n"))
     return
@@ -165,6 +191,7 @@ local function renderOption(option)
   local notes = ForeverCounterbook.Journal:GetNotes(option.key)
   if next(notes) == nil then table.insert(lines, ForeverCounterbook.Text("journal_no_notes")) end
   for index, note in ipairs(notes) do table.insert(lines, index .. ". " .. note.text) end
+  appendEncounterHistory(lines, option.key)
   appendBriefing(lines, option.profileId)
   view.cardBody:SetText(table.concat(lines, "\n"))
 end
@@ -259,6 +286,7 @@ function ForeverCounterbook.ShowDiagnostics()
       directory = directoryError and directoryError.code,
       checklist = checklistError and checklistError.code,
       uiSettings = uiSettingsError and uiSettingsError.code,
+      encounterHistory = encounterHistoryError and encounterHistoryError.code,
     },
   })
   DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("diagnostics_title"))
@@ -268,6 +296,24 @@ function ForeverCounterbook.ShowDiagnostics()
   local errorCount = 0
   for key, value in pairs(report.errors) do if value then errorCount = errorCount + 1; DEFAULT_CHAT_FRAME:AddMessage(key .. "=" .. value) end end
   if errorCount == 0 then DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("diagnostics_errors") .. ": " .. ForeverCounterbook.Text("diagnostics_none")) end
+end
+
+function ForeverCounterbook.RecordEncounter(result, cause, tags, note)
+  if not selectedOption then DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("encounter_select_first")); return end
+  if not encounterHistory then DEFAULT_CHAT_FRAME:AddMessage("Forever Counterbook: " .. encounterHistoryError.code); return end
+  local _, err = encounterHistory:Record(selectedOption.key, result, cause, tags, note)
+  if err then DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("encounter_invalid") .. " (" .. err.code .. ")"); return end
+  DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("encounter_saved"))
+  renderOption(selectedOption)
+end
+
+function ForeverCounterbook.ShowEncounterHistory()
+  if not selectedOption then DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("encounter_select_first")); return end
+  if not encounterHistory then DEFAULT_CHAT_FRAME:AddMessage("Forever Counterbook: " .. encounterHistoryError.code); return end
+  DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("encounter_title") .. ":")
+  local entries = encounterHistory:List(selectedOption.key)
+  if next(entries) == nil then DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("encounter_empty")); return end
+  for _, entry in ipairs(entries) do DEFAULT_CHAT_FRAME:AddMessage(encounterLine(entry)) end
 end
 
 function ForeverCounterbook.AddBriefingChecklistItem(profileId, text)

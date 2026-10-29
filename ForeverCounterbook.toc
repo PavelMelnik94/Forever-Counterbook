@@ -10,6 +10,7 @@ src/Bootstrap.lua
 src/Locales.lua
 src/MatchupCatalog.lua
 src/MatchupJournal.lua
+src/EncounterHistory.lua
 src/PvPBriefing.lua
 src/BriefingChecklist.lua
 src/UISettings.lua

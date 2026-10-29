@@ -8,6 +8,8 @@ The Patch Dataset is declarative Lua loaded by the game. It contains localized t
 
 `MatchupJournal.New(storage)` is the personal-learning seam. It owns Journal Entry validation, identifiers, filtering, and serializable state. The SavedVariables adapter maps that state to `ForeverCounterbookDB.journal`; tests use an in-memory adapter. Neither adapter contains journal rules.
 
+`EncounterHistory.New(storage)` is the structured personal-history seam. Its two-method interface records a manually supplied win/loss, cause, controlled Mistake Tags, and note, then lists entries by Matchup Key. It validates the complete versioned state before use and maps only to `ForeverCounterbookDB.encounterHistory`; no migration is required, so existing note-only Journal Entries remain readable. Encounter History is private state, never Evidence or inferred combat data.
+
 `PatchIntelligence.Evaluate(dataset, runtime, profileId)` is the freshness seam. It keeps schema version, Dataset Revision, addon version, patch identity, build, and interface distinct; returns `current` only for exact observed matches; and filters authored changes by Player Profile. `RuntimeInfo` is a thin WoW adapter: unavailable client evidence produces `unknown`, never an optimistic match.
 
 `MatchupDirectory.Build(dataset)` is the discovery seam. It expands declared profiles and Opponent Classes into deterministic Matchup Options, distinguishes Authored from Not Yet Authored without manufacturing empty cards, and indexes only declared profile, class, ability, race, and patch terms. `MatchupBookView` is the two-panel WoW adapter over that interface.
@@ -23,6 +25,9 @@ Patch Dataset -> MatchupCatalog <- tests
                          ^
 Locales ----------> CardView <- WoW UI / slash command
 MatchupJournal <--- CardView
+      ^
+SavedVariables adapter / in-memory test adapter
+EncounterHistory <--- MatchupBookView / manual slash command
       ^
 SavedVariables adapter / in-memory test adapter
 Patch Dataset -> PatchIntelligence <- RuntimeInfo

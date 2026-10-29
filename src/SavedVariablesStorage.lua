@@ -27,4 +27,8 @@ function SavedVariablesStorage.NewUISettings()
   return newStorage("uiSettings")
 end
 
+function SavedVariablesStorage.NewEncounterHistory()
+  return newStorage("encounterHistory")
+end
+
 ForeverCounterbook.SavedVariablesStorage = SavedVariablesStorage

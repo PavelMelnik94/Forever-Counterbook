@@ -80,11 +80,15 @@ The player's private record of observations and mistakes after a duel or death.
 _Avoid_: combat log, telemetry
 
 **Journal Entry**:
-One player-authored record attached to a Matchup Card, optionally describing an Encounter Result, cause, and Mistake Tags.
+One player-authored note attached to a Matchup Card.
 _Avoid_: evidence, combat event
 
+**Encounter History**:
+The player's private collection of manually recorded Encounter Results, causes, Mistake Tags, and notes for a Matchup Key; it remains separate from Matchup Journal notes and distributed knowledge.
+_Avoid_: combat log, evidence, telemetry
+
 **Encounter Result**:
-A player-recorded outcome of one encounter; it is personal history rather than proof of matchup guidance.
+A manually player-recorded win or loss for one encounter, with a cause, Mistake Tags, and note; it is personal history rather than proof of matchup guidance.
 _Avoid_: combat-log result, evidence
 
 **Mistake Tag**:

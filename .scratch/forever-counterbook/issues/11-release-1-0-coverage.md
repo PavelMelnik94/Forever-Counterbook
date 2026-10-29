@@ -4,7 +4,7 @@
 
 **Blocked by:** 06: MVP profile content and manual search; 10: Accessible and diagnostic UI.
 
-**Status:** ready-for-agent
+**Status:** blocked pending Player Profile decisions, Paladin scope resolution, and complete evidence review
 
 - [ ] All nine classes have explicitly defined Player Profiles before content is authored.
 - [ ] Race-specific guidance declares context and Evidence Status.

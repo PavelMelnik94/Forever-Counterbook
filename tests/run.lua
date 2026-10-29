@@ -1,6 +1,7 @@
 ForeverCounterbook = {}
 dofile("src/MatchupCatalog.lua")
 dofile("src/MatchupJournal.lua")
+dofile("src/EncounterHistory.lua")
 dofile("src/SavedVariablesStorage.lua")
 dofile("src/PatchIntelligence.lua")
 dofile("src/MatchupDirectory.lua")
@@ -71,6 +72,141 @@ test("SavedVariables adapter restores notes for a new Journal instance", functio
   local secondStorage = ForeverCounterbook.SavedVariablesStorage.New()
   local secondJournal = ForeverCounterbook.MatchupJournal.New(secondStorage)
   equal(secondJournal:GetNotes("resto_shaman:warrior")[1].text, "Save Grounding Totem for the planned spell.")
+end)
+
+test("records manual Encounter Results and filters history by Matchup Key", function()
+  local persisted
+  local storage = { Load = function() return persisted end, Save = function(_, state) persisted = state end }
+  local history = ForeverCounterbook.EncounterHistory.New(storage)
+  local entry, err = history:Record(
+    "resto_shaman:warrior", "loss", "Missed the interrupt window.",
+    { "positioning", "cooldown" }, "Stayed too close after the opener."
+  )
+  equal(err, nil)
+  equal(entry.id, 1)
+  equal(entry.result, "loss")
+  history:Record("arms_warrior:mage", "win", "Kept pressure.", { "target_choice" }, "Pressed the advantage.")
+
+  local reloaded = ForeverCounterbook.EncounterHistory.New(storage)
+  local entries = reloaded:List("resto_shaman:warrior")
+  equal(#entries, 1)
+  equal(entries[1].cause, "Missed the interrupt window.")
+  equal(entries[1].tags[2], "cooldown")
+  equal(entries[1].note, "Stayed too close after the opener.")
+end)
+
+test("rejects invalid manual Encounter Results without mutating history", function()
+  local persisted, saves
+  local storage = {
+    Load = function() return persisted end,
+    Save = function(_, state) persisted = state; saves = (saves or 0) + 1 end,
+  }
+  local history = ForeverCounterbook.EncounterHistory.New(storage)
+  local entry, err = history:Record(
+    "resto_shaman:warrior", "draw", "Unclear result.", { "positioning" }, "Review later."
+  )
+  equal(entry, nil)
+  equal(err.code, "invalid_encounter_result")
+  equal(saves, nil)
+  equal(#history:List("resto_shaman:warrior"), 0)
+
+  entry, err = history:Record(
+    "resto_shaman:warrior", "loss", "Missed timing.", { "positioning", "positioning" }, "Review later."
+  )
+  equal(entry, nil)
+  equal(err.code, "invalid_mistake_tags")
+  equal(saves, nil)
+
+  entry, err = history:Record("resto_shaman:warrior", "loss", " ", { "cc" }, "Review later.")
+  equal(entry, nil)
+  equal(err.code, "invalid_encounter_cause")
+  equal(saves, nil)
+
+  entry, err = history:Record(
+    "resto_shaman:warrior", "loss", "Missed timing.", { "unknown" }, "Review later."
+  )
+  equal(entry, nil)
+  equal(err.code, "invalid_mistake_tags")
+  entry, err = history:Record(
+    "resto_shaman:warrior", "loss", "Missed timing.", { [2] = "cc" }, "Review later."
+  )
+  equal(entry, nil)
+  equal(err.code, "invalid_mistake_tags")
+  entry, err = history:Record(
+    "resto_shaman:warrior", "loss", "Missed timing.", { "cc" }, " "
+  )
+  equal(entry, nil)
+  equal(err.code, "invalid_encounter_note")
+  equal(saves, nil)
+end)
+
+test("rejects malformed persisted Encounter History without overwriting it", function()
+  local persisted = {
+    schemaVersion = 1, nextId = 1,
+    entries = {
+      {
+        id = 1, matchupKey = "resto_shaman:warrior", result = "win",
+        cause = "Held position.", tags = { "positioning" }, note = "Good spacing.",
+      },
+    },
+  }
+  local saves = 0
+  local storage = { Load = function() return persisted end, Save = function() saves = saves + 1 end }
+  local history, err = ForeverCounterbook.EncounterHistory.New(storage)
+  equal(history, nil)
+  equal(err.code, "invalid_encounter_history_state")
+  equal(saves, 0)
+
+  persisted.nextId = 2
+  persisted.entries[2] = {
+    id = 1, matchupKey = "resto_shaman:warrior", result = "loss",
+    cause = "Duplicate id.", tags = { "cc" }, note = "Invalid state.",
+  }
+  history, err = ForeverCounterbook.EncounterHistory.New(storage)
+  equal(history, nil)
+  equal(err.code, "invalid_encounter_history_state")
+  equal(saves, 0)
+end)
+
+test("stores Encounter History separately and keeps note-only Journal entries readable", function()
+  ForeverCounterbookDB = nil
+  local journal = ForeverCounterbook.MatchupJournal.New(ForeverCounterbook.SavedVariablesStorage.New())
+  journal:AddNote("resto_shaman:warrior", "Existing note-only entry.")
+
+  local history = ForeverCounterbook.EncounterHistory.New(ForeverCounterbook.SavedVariablesStorage.NewEncounterHistory())
+  local entry, err = history:Record(
+    "resto_shaman:warrior", "win", "Held position.", { "positioning" }, "Kept safe distance."
+  )
+  equal(err, nil)
+  equal(entry.id, 1)
+  equal(ForeverCounterbookDB.encounterHistory.entries[1].result, "win")
+  equal(ForeverCounterbookDB.journal.entries[1].text, "Existing note-only entry.")
+  equal(ForeverCounterbookDB.briefingChecklist, nil)
+  equal(ForeverCounterbookDB.uiSettings, nil)
+
+  local reloadedJournal = ForeverCounterbook.MatchupJournal.New(ForeverCounterbook.SavedVariablesStorage.New())
+  equal(reloadedJournal:GetNotes("resto_shaman:warrior")[1].text, "Existing note-only entry.")
+end)
+
+test("protects persisted Encounter History from caller mutation", function()
+  local persisted
+  local storage = { Load = function() return persisted end, Save = function(_, state) persisted = state end }
+  local history = ForeverCounterbook.EncounterHistory.New(storage)
+  local suppliedTags = { "positioning" }
+  local recorded = history:Record(
+    "resto_shaman:warrior", "win", "Held position.", suppliedTags, "Kept safe distance."
+  )
+  suppliedTags[1] = "unknown"
+  recorded.result = "loss"
+  recorded.tags[1] = "cooldown"
+  local listed = history:List("resto_shaman:warrior")
+  listed[1].note = "mutated"
+  listed[1].tags[1] = "cc"
+
+  local unchanged = history:List("resto_shaman:warrior")[1]
+  equal(unchanged.result, "win")
+  equal(unchanged.tags[1], "positioning")
+  equal(unchanged.note, "Kept safe distance.")
 end)
 
 local function patchDataset()
@@ -437,12 +573,14 @@ test("builds privacy-safe diagnostics without personal content", function()
     errors = {
       catalog = nil, directory = "invalid_directory_metadata",
       private = "private note", checklist = { text = "private checklist" },
+      encounterHistory = "invalid_encounter_history_state",
     },
     journal = { { text = "private note" } }, checklist = { { text = "private checklist" } },
   })
   equal(report.addonVersion, "0.1.0-dev")
   equal(report.datasetRevision, "2026.10.29.1")
   equal(report.errors.directory, "invalid_directory_metadata")
+  equal(report.errors.encounterHistory, "invalid_encounter_history_state")
   equal(report.errors.private, nil)
   equal(report.errors.checklist, nil)
   equal(report.journal, nil)

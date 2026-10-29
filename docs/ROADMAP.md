@@ -10,9 +10,9 @@ Load and validate one Patch Dataset, then display one localized Matchup Card wit
 
 Let the player open the current card, manually record one observation or mistake, persist it in `ForeverCounterbookDB`, and read it back. Test the journal module through a storage interface using an in-memory adapter; smoke-test the SavedVariables adapter in game.
 
-### Slice 3 — structured journal history
+### Slice 3 — structured encounter history (implemented; client smoke test pending)
 
-Add manual Encounter Result, cause, Mistake Tags, history, and local summaries, followed by explicit export/import.
+Add manual Encounter Result, cause, Mistake Tags, and Matchup Key history in separate validated local storage. Local summaries and explicit export/import remain later slices.
 
 ### Slice 4 — profile-aware dataset changes (implemented; client smoke test pending)
 

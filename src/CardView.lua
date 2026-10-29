@@ -60,8 +60,31 @@ local function showCurrentNotes()
   for index, note in ipairs(notes) do DEFAULT_CHAT_FRAME:AddMessage(index .. ". " .. note.text) end
 end
 
+local function parseMistakeTags(text)
+  local tags = {}
+  for value in string.gmatch(text or "", "[^,]+") do
+    local tag = string.match(value, "^%s*(.-)%s*$")
+    table.insert(tags, string.lower(tag))
+  end
+  return tags
+end
+
 SLASH_FOREVERCOUNTERBOOK1 = "/fcb"
 SlashCmdList.FOREVERCOUNTERBOOK = function(message)
+  local encounterResult, encounterCause, encounterTags, encounterNote = string.match(
+    message or "", "^encounter%s+(%S+)%s+(.-)%s*|%s*(.-)%s*|%s*(.-)%s*$"
+  )
+  if encounterResult then
+    ForeverCounterbook.RecordEncounter(
+      string.lower(encounterResult), encounterCause, parseMistakeTags(encounterTags), encounterNote
+    )
+    return
+  end
+  if string.match(message or "", "^encounter") then
+    DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("encounter_invalid"))
+    return
+  end
+  if message == "history" then ForeverCounterbook.ShowEncounterHistory(); return end
   local uiLayout = string.match(message or "", "^ui%s+layout%s+(%S+)$")
   if uiLayout then ForeverCounterbook.ConfigureUI("layout", string.lower(uiLayout)); return end
   local uiScale = string.match(message or "", "^ui%s+scale%s+([%d%.]+)$")

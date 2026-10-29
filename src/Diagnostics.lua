@@ -1,5 +1,5 @@
 local Diagnostics = {}
-local ERROR_KEYS = { "catalog", "directory", "checklist", "uiSettings" }
+local ERROR_KEYS = { "catalog", "directory", "checklist", "uiSettings", "encounterHistory" }
 
 function Diagnostics.Build(context)
   local errors = {}
