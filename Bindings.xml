@@ -1,0 +1,4 @@
+<Bindings>
+  <Binding name="FCB_TOGGLE_BOOK" header="FOREVERCOUNTERBOOK">ForeverCounterbook.ToggleMatchupBook()</Binding>
+  <Binding name="FCB_OPEN_COMPACT">ForeverCounterbook.OpenSelectedCompactCard()</Binding>
+</Bindings>

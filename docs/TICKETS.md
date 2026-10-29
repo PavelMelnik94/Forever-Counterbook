@@ -10,8 +10,9 @@ Tickets are stored as one tracer-bullet file per deliverable under `.scratch/for
 - `05` Patch status and profile change summary — implemented; client smoke test pending.
 - `06` MVP Matchup Book and manual search — implemented; client smoke test pending.
 - `08` Profile-aware PvP Briefing — implemented; client smoke test pending.
-- `10` Accessible and diagnostic UI — ready, unblocked by completed `06` and `08`.
+- `10` Accessible and diagnostic UI — implemented; client smoke test pending.
 - `07` Define Warrior and Druid profiles — implemented by approved product scope.
+- `11` Complete nine-class Matchup Book — ready, unblocked by completed `06`, `07`, and `10`; gameplay content still requires evidence review.
 
 See the [PRD](product/PRD.md), [MVP specification](MVP.md), and [roadmap](ROADMAP.md) for scope.
 

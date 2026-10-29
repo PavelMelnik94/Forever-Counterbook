@@ -14,6 +14,8 @@ The Patch Dataset is declarative Lua loaded by the game. It contains localized t
 
 `PvPBriefing.Build(dataset, profileId, checklistItems)` is the preparation seam. It validates authored requirements and their Evidence/Source rules, emits five explicit Authored or Not Yet Authored sections, and keeps the Private Checklist separate. `BriefingChecklist.New(storage)` owns profile-scoped private state; the SavedVariables adapter maps it only to `ForeverCounterbookDB.briefingChecklist`.
 
+`UISettings.New(storage)` owns the validated Viewer Layout, scale, position, and UI Theme state. Its SavedVariables adapter maps only to `ForeverCounterbookDB.uiSettings`; `ViewerSettingsView` applies the same presentation rules to book and compact frames. The primary Matchup Book remains the default and compact mode is an explicit player choice. `Diagnostics.Build(context)` is a whitelist boundary that exposes only versions, patch/runtime status, and validation error codes, never Matchup Journal or Private Checklist content. Keybindings call viewer functions only and do not inspect targets or combat state.
+
 ## Dependency direction
 
 ```text
@@ -32,6 +34,10 @@ Patch Dataset -> MatchupDirectory <- tests
 Patch Dataset -> PvPBriefing <- BriefingChecklist
                                       ^
                          SavedVariables adapter
+UISettings <------------- SavedVariables adapter
+Diagnostics <------------ version/status/error context
+        |
+MatchupBookView / safe keybindings
 ```
 
 The viewer knows the catalog, journal, and Patch Intelligence interfaces; core modules know nothing about frames, locale, or combat APIs. `PatchStatusView` and `RuntimeInfo` contain the WoW-specific presentation and observation details.

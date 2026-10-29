@@ -63,6 +63,15 @@ Committed Player Profiles are Restoration Shaman, Enhancement Shaman as a levell
 - Bundled Briefing Requirements are currently all Not Yet Authored because no complete source-backed loadout exists for the active profiles.
 - No action-bar, inventory, equipment, aura, cooldown, or combat-state inspection is included.
 
+## Accessible and diagnostic UI slice
+
+- The primary two-panel Matchup Book remains the default; the player may explicitly select the optional compact card layout.
+- Layout, scale, Matchup Book position, and theme persist in a dedicated local `uiSettings` SavedVariables record.
+- `default`, `high_contrast`, and `colorblind` themes supplement textual Authored/Not Yet Authored and Evidence labels; meaning never depends on color alone.
+- Keybindings only toggle the Matchup Book or open the already selected authored compact card. They do not select targets or perform combat actions.
+- `/fcb diagnostics` reports whitelisted addon, schema, dataset, patch, client, interface, and validation fields without journal notes or checklist text.
+- Frame, binding, font, and SavedVariables behavior still require an in-client Forever 1.60.1 smoke test.
+
 ## Out of scope
 
 - Reading restricted enemy auras, cooldowns, talents, or protected state.

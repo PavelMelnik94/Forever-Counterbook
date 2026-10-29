@@ -6,6 +6,8 @@ dofile("src/PatchIntelligence.lua")
 dofile("src/MatchupDirectory.lua")
 dofile("src/PvPBriefing.lua")
 dofile("src/BriefingChecklist.lua")
+dofile("src/UISettings.lua")
+dofile("src/Diagnostics.lua")
 local passed, failed = 0, 0
 local function test(name, body)
   local ok, message = pcall(body)
@@ -391,6 +393,60 @@ test("bundled Briefings stay explicitly not authored for all active profiles", f
       equal(briefing.sections[sectionId].status, "not_authored")
     end
   end
+end)
+
+test("persists accessible viewer layout, scale, position, and theme", function()
+  local persisted
+  local storage = { Load = function() return persisted end, Save = function(_, state) persisted = state end }
+  local settings = ForeverCounterbook.UISettings.New(storage)
+  local updated, err = settings:Update({ layout = "compact", scale = 1.2, point = "TOPLEFT", x = 40, y = -60, theme = "high_contrast" })
+  equal(err, nil)
+  equal(updated.layout, "compact")
+  local reloaded = ForeverCounterbook.UISettings.New(storage)
+  equal(reloaded:Get().scale, 1.2)
+  equal(reloaded:Get().point, "TOPLEFT")
+  equal(reloaded:Get().theme, "high_contrast")
+end)
+
+test("keeps valid viewer settings when an update is rejected", function()
+  local persisted
+  local storage = { Load = function() return persisted end, Save = function(_, state) persisted = state end }
+  local settings = ForeverCounterbook.UISettings.New(storage)
+  settings:Update({ layout = "compact", scale = 1.2 })
+  local rejected, err = settings:Update({ scale = 2.5 })
+  equal(rejected, nil)
+  equal(err.code, "invalid_ui_settings")
+  equal(settings:Get().layout, "compact")
+  equal(settings:Get().scale, 1.2)
+  equal(persisted.scale, 1.2)
+end)
+
+test("stores viewer settings separately from journal and checklist data", function()
+  ForeverCounterbookDB = {}
+  local storage = ForeverCounterbook.SavedVariablesStorage.NewUISettings()
+  storage:Save({ schemaVersion = 1, layout = "book" })
+  equal(ForeverCounterbookDB.uiSettings.layout, "book")
+  equal(ForeverCounterbookDB.journal, nil)
+  equal(ForeverCounterbookDB.briefingChecklist, nil)
+end)
+
+test("builds privacy-safe diagnostics without personal content", function()
+  local report = ForeverCounterbook.Diagnostics.Build({
+    addonVersion = "0.1.0-dev", schemaVersion = 1, datasetRevision = "2026.10.29.1",
+    patchKey = "forever-1.60.1-interface-16001", patchStatus = "unknown", patchReason = "build_declaration_missing",
+    errors = {
+      catalog = nil, directory = "invalid_directory_metadata",
+      private = "private note", checklist = { text = "private checklist" },
+    },
+    journal = { { text = "private note" } }, checklist = { { text = "private checklist" } },
+  })
+  equal(report.addonVersion, "0.1.0-dev")
+  equal(report.datasetRevision, "2026.10.29.1")
+  equal(report.errors.directory, "invalid_directory_metadata")
+  equal(report.errors.private, nil)
+  equal(report.errors.checklist, nil)
+  equal(report.journal, nil)
+  equal(report.checklist, nil)
 end)
 
 print(string.format("%d passed, %d failed", passed, failed)); if failed > 0 then os.exit(1) end

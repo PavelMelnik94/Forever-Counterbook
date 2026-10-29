@@ -4,11 +4,12 @@
 
 **Blocked by:** 06: MVP profile content and manual search; 08: Profile-aware PvP Briefing.
 
-**Status:** ready-for-agent
+**Status:** implemented; client smoke test pending
 
-- [ ] Layout, scale, and position persist locally.
-- [ ] Colorblind-safe status encoding never relies on color alone.
-- [ ] Keybinds do not automate targeting or combat actions.
-- [ ] Diagnostics expose versions and validation errors without personal journal content.
-- [ ] An optional compact PvP Card mode complements the primary two-panel Matchup Book without replacing it.
+- [x] Layout, scale, and position persist locally.
+- [x] Colorblind-safe status encoding never relies on color alone.
+- [x] Keybinds do not automate targeting or combat actions.
+- [x] Diagnostics expose versions and validation errors without personal journal content.
+- [x] An optional compact PvP Card mode complements the primary two-panel Matchup Book without replacing it.
+- [ ] Smoke-test movement, scaling, themes, bindings, RU/EN labels, compact mode, and diagnostics in Forever 1.60.1.
 

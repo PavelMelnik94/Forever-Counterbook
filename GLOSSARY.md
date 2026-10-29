@@ -12,6 +12,18 @@ _Avoid_: guide, tier list
 The primary two-panel browsing view: Matchup Options and coverage status on the left, the selected Matchup Card and personal learning context on the right.
 _Avoid_: automatic target helper, compact overlay
 
+**Viewer Layout**:
+The player-selected presentation mode: the primary two-panel Matchup Book or an optional compact authored Matchup Card.
+_Avoid_: automatic target mode
+
+**UI Theme**:
+A local visual treatment such as default, high contrast, or colorblind; it reinforces but never replaces textual status labels.
+_Avoid_: evidence status, accessibility guarantee
+
+**Diagnostic Report**:
+A privacy-safe view of addon, dataset, patch, client, interface, and validation status containing no Matchup Journal or Private Checklist text.
+_Avoid_: telemetry, support upload
+
 **Matchup Option**:
 One declared Player Profile and Opponent Class pair whose content status is Authored or Not Yet Authored.
 _Avoid_: empty Matchup Card

@@ -12,12 +12,24 @@ local function ensureFrame()
   frame:SetWidth(430); frame:SetHeight(270); frame:SetPoint("CENTER", UIParent, "CENTER", 0, 80)
   frame:SetMovable(true); frame:EnableMouse(true); frame:RegisterForDrag("LeftButton")
   frame:SetScript("OnDragStart", function() frame:StartMoving() end)
-  frame:SetScript("OnDragStop", function() frame:StopMovingOrSizing() end)
+  frame:SetScript("OnDragStop", function()
+    frame:StopMovingOrSizing()
+    local settings = ForeverCounterbook.ViewerSettings
+    if settings then
+      local point, _, relativePoint, x, y = frame:GetPoint()
+      settings:Update({ point = point or relativePoint or "CENTER", x = x or 0, y = y or 0 })
+    end
+  end)
   if frame.SetBackdrop then frame:SetBackdrop({ bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", edgeSize = 24, insets = { left = 6, right = 6, top = 6, bottom = 6 } }) end
   frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge"); frame.title:SetPoint("TOPLEFT", frame, "TOPLEFT", 20, -20)
   frame.body = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight"); frame.body:SetPoint("TOPLEFT", frame.title, "BOTTOMLEFT", 0, -18)
-  frame.body:SetWidth(390); frame.body:SetJustifyH("LEFT"); frame.body:SetJustifyV("TOP"); frame:Hide()
+  frame.body:SetWidth(390); frame.body:SetJustifyH("LEFT"); frame.body:SetJustifyV("TOP")
+  ForeverCounterbook.ViewerSettingsView.Apply(frame, ForeverCounterbook.ViewerSettings); frame:Hide()
   return frame
+end
+
+function ForeverCounterbook.ApplyCompactViewerSettings()
+  if frame then ForeverCounterbook.ViewerSettingsView.Apply(frame, ForeverCounterbook.ViewerSettings) end
 end
 
 function ForeverCounterbook.ShowCard(profileId, opponentClass)
@@ -50,6 +62,13 @@ end
 
 SLASH_FOREVERCOUNTERBOOK1 = "/fcb"
 SlashCmdList.FOREVERCOUNTERBOOK = function(message)
+  local uiLayout = string.match(message or "", "^ui%s+layout%s+(%S+)$")
+  if uiLayout then ForeverCounterbook.ConfigureUI("layout", string.lower(uiLayout)); return end
+  local uiScale = string.match(message or "", "^ui%s+scale%s+([%d%.]+)$")
+  if uiScale then ForeverCounterbook.ConfigureUI("scale", tonumber(uiScale)); return end
+  local uiTheme = string.match(message or "", "^ui%s+theme%s+(%S+)$")
+  if uiTheme then ForeverCounterbook.ConfigureUI("theme", string.lower(uiTheme)); return end
+  if message == "diagnostics" then ForeverCounterbook.ShowDiagnostics(); return end
   local briefingProfile, briefingOpponent = string.match(message or "", "^briefing%s+(%S+)%s+(%S+)$")
   if briefingProfile then ForeverCounterbook.OpenMatchupOption(string.lower(briefingProfile), string.lower(briefingOpponent)); return end
   local checklistProfile, checklistText = string.match(message or "", "^checklist%s+(%S+)%s+add%s+(.+)$")

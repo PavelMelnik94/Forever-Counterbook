@@ -12,6 +12,7 @@ The addon is not a DR tracker, cooldown bar, kill feed, damage meter, enemy-stat
 - Minimal in-game viewer for the illustrative Restoration Shaman vs Warrior card.
 - Manually saved Matchup Journal notes backed by SavedVariables.
 - Two-panel Matchup Book with deterministic RU/EN search and explicit authored/missing coverage.
+- Persistent book/compact layout, scale, position, accessible themes, safe keybindings, and privacy-safe diagnostics.
 - Offline Lua syntax and catalog behavior checks.
 
 The included gameplay prompts are labelled as assumptions or user reflection prompts; they are not yet verified matchup claims.
@@ -29,6 +30,9 @@ The included gameplay prompts are labelled as assumptions or user reflection pro
 9. Run `/fcb open <profile> <class>` to open one Matchup Option directly.
 10. Run `/fcb briefing <profile> <class>` to open the profile-aware PvP Briefing inside the Matchup Book.
 11. Manage the private checklist with `/fcb checklist <profile> add <text>` and `/fcb checklist <profile> toggle <id>`.
+12. Configure the viewer with `/fcb ui layout book|compact`, `/fcb ui scale 0.6-1.6`, and `/fcb ui theme default|high_contrast|colorblind`.
+13. Run `/fcb diagnostics` to print version, patch, client, and validation status without journal or checklist content.
+14. In Key Bindings, assign **Open or close Matchup Book** or **Open selected compact card**. These bindings only open local UI and never target or act in combat.
 
 The bundled inventory currently declares 54 profile/class options: one Authored card and 53 Not Yet Authored options. Ability and race searches intentionally return no bundled results until sourced metadata is authored.
 

@@ -7,6 +7,9 @@ local checklist, checklistError = ForeverCounterbook.BriefingChecklist.New(
 )
 ForeverCounterbook.BriefingChecklistState = checklist
 ForeverCounterbook.BriefingChecklistError = checklistError
+local uiSettings, uiSettingsError = ForeverCounterbook.UISettings.New(ForeverCounterbook.SavedVariablesStorage.NewUISettings())
+ForeverCounterbook.ViewerSettings = uiSettings
+ForeverCounterbook.ViewerSettingsError = uiSettingsError
 
 local frame
 local optionButtons = {}
@@ -69,7 +72,13 @@ local function ensureFrame()
   frame:SetWidth(800); frame:SetHeight(520); frame:SetPoint("CENTER", UIParent, "CENTER", 0, 30)
   frame:SetMovable(true); frame:EnableMouse(true); frame:RegisterForDrag("LeftButton")
   frame:SetScript("OnDragStart", function() frame:StartMoving() end)
-  frame:SetScript("OnDragStop", function() frame:StopMovingOrSizing() end)
+  frame:SetScript("OnDragStop", function()
+    frame:StopMovingOrSizing()
+    if uiSettings then
+      local point, _, relativePoint, x, y = frame:GetPoint()
+      uiSettings:Update({ point = point or relativePoint or "CENTER", x = x or 0, y = y or 0 })
+    end
+  end)
   if frame.SetBackdrop then frame:SetBackdrop({ bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", edgeSize = 24, insets = { left = 6, right = 6, top = 6, bottom = 6 } }) end
 
   frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
@@ -109,6 +118,7 @@ local function ensureFrame()
   frame.cardBody:SetPoint("TOPLEFT", frame.cardTitle, "BOTTOMLEFT", 0, -14); frame.cardBody:SetWidth(470)
   frame.cardBody:SetJustifyH("LEFT"); frame.cardBody:SetJustifyV("TOP")
   frame.cardBody:SetText(ForeverCounterbook.Text("book_open_hint"))
+  ForeverCounterbook.ViewerSettingsView.Apply(frame, uiSettings)
   frame:Hide()
   return frame
 end
@@ -203,7 +213,61 @@ end
 function ForeverCounterbook.OpenMatchupOption(profileId, opponentClass)
   local option, err = directory:Resolve(profileId, opponentClass)
   if not option then DEFAULT_CHAT_FRAME:AddMessage("Forever Counterbook: " .. err.code); return end
-  ForeverCounterbook.ShowMatchupBook(profileId); renderOption(option)
+  if uiSettings and uiSettings:Get().layout == "compact" and option.status == "authored" then
+    selectedOption = option
+    ForeverCounterbook.ShowCard(profileId, opponentClass)
+  else
+    ForeverCounterbook.ShowMatchupBook(profileId); renderOption(option)
+  end
+end
+
+function ForeverCounterbook.ConfigureUI(key, value)
+  if not uiSettings then DEFAULT_CHAT_FRAME:AddMessage("Forever Counterbook: " .. uiSettingsError.code); return end
+  local updated, err = uiSettings:Update({ [key] = value })
+  if not updated then DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("ui_invalid") .. " (" .. err.code .. ")"); return end
+  if frame then ForeverCounterbook.ViewerSettingsView.Apply(frame, uiSettings) end
+  ForeverCounterbook.ApplyCompactViewerSettings()
+  DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("ui_updated"))
+end
+
+function ForeverCounterbook.ToggleMatchupBook()
+  local view = ensureFrame()
+  if view:IsShown() then view:Hide() else ForeverCounterbook.ShowMatchupBook(activeProfile) end
+end
+
+function ForeverCounterbook.OpenSelectedCompactCard()
+  if selectedOption and selectedOption.status == "authored" then
+    ForeverCounterbook.ShowCard(selectedOption.profileId, selectedOption.opponentClass)
+  else
+    DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("compact_requires_authored"))
+  end
+end
+
+function ForeverCounterbook.ShowDiagnostics()
+  local runtime = ForeverCounterbook.RuntimeInfo.Read()
+  local patchReport, patchError = ForeverCounterbook.PatchIntelligence.Evaluate(ForeverCounterbook.Data16001, runtime, activeProfile)
+  local report = ForeverCounterbook.Diagnostics.Build({
+    addonVersion = ForeverCounterbook.VERSION,
+    schemaVersion = ForeverCounterbook.Data16001.schemaVersion,
+    datasetRevision = ForeverCounterbook.Data16001.datasetRevision,
+    patchKey = ForeverCounterbook.Data16001.patchKey,
+    patchStatus = patchReport and patchReport.status or "unknown",
+    patchReason = patchReport and patchReport.reason or (patchError and patchError.code),
+    clientVersion = runtime.clientVersion, clientBuild = runtime.clientBuild, interfaceVersion = runtime.interfaceVersion,
+    errors = {
+      catalog = ForeverCounterbook.CatalogError and ForeverCounterbook.CatalogError.code,
+      directory = directoryError and directoryError.code,
+      checklist = checklistError and checklistError.code,
+      uiSettings = uiSettingsError and uiSettingsError.code,
+    },
+  })
+  DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("diagnostics_title"))
+  DEFAULT_CHAT_FRAME:AddMessage("addon=" .. tostring(report.addonVersion) .. " schema=" .. tostring(report.schemaVersion) .. " dataset=" .. tostring(report.datasetRevision))
+  DEFAULT_CHAT_FRAME:AddMessage("patch=" .. tostring(report.patchKey) .. " status=" .. tostring(report.patchStatus) .. " reason=" .. tostring(report.patchReason))
+  DEFAULT_CHAT_FRAME:AddMessage("client=" .. tostring(report.clientVersion) .. " build=" .. tostring(report.clientBuild) .. " interface=" .. tostring(report.interfaceVersion))
+  local errorCount = 0
+  for key, value in pairs(report.errors) do if value then errorCount = errorCount + 1; DEFAULT_CHAT_FRAME:AddMessage(key .. "=" .. value) end end
+  if errorCount == 0 then DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("diagnostics_errors") .. ": " .. ForeverCounterbook.Text("diagnostics_none")) end
 end
 
 function ForeverCounterbook.AddBriefingChecklistItem(profileId, text)

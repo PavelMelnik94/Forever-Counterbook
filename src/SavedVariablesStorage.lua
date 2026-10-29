@@ -23,4 +23,8 @@ function SavedVariablesStorage.NewBriefingChecklist()
   return newStorage("briefingChecklist")
 end
 
+function SavedVariablesStorage.NewUISettings()
+  return newStorage("uiSettings")
+end
+
 ForeverCounterbook.SavedVariablesStorage = SavedVariablesStorage

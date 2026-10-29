@@ -12,6 +12,9 @@ src/MatchupCatalog.lua
 src/MatchupJournal.lua
 src/PvPBriefing.lua
 src/BriefingChecklist.lua
+src/UISettings.lua
+src/ViewerSettingsView.lua
+src/Diagnostics.lua
 src/SavedVariablesStorage.lua
 src/PatchIntelligence.lua
 src/MatchupDirectory.lua
@@ -20,4 +23,5 @@ src/data/16001.lua
 src/PatchStatusView.lua
 src/CardView.lua
 src/MatchupBookView.lua
+Bindings.xml
 

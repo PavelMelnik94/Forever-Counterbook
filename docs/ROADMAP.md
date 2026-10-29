@@ -32,11 +32,14 @@ Show evidence-aware profile requirements and a persistent private checklist insi
 
 Add manual outcome capture and only client-verified Death Recap integrations. Action-bar inspection remains absent until capability is verified.
 
+### Slice 7 — accessible and diagnostic UI (implemented; client smoke test pending)
+
+Persist the primary/compact viewer choice, scale, position, and accessible theme; add UI-only keybindings and privacy-safe diagnostics. All important statuses retain textual labels, and no target or combat state is read.
+
 ## 1.0
 
 - Cover all nine classes and relevant races after profile decisions.
-- Add extended local statistics and polished accessible UI.
-- Add an optional compact PvP Card mode alongside the primary Matchup Book.
+- Add extended local statistics and finish in-client accessibility polish.
 
 ## 1.x
 

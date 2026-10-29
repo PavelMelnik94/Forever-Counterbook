@@ -26,6 +26,10 @@ ForeverCounterbook.Locales = {
     briefing_consumables = "Consumables", briefing_reagents = "Reagents", briefing_abilities = "Key abilities",
     briefing_private_checklist = "Private checklist", briefing_checklist_empty = "No private checklist items.",
     briefing_item_added = "Checklist item saved.", briefing_item_toggled = "Checklist item updated.",
+    ui_updated = "UI settings saved.", ui_invalid = "Invalid UI setting.",
+    diagnostics_title = "Forever Counterbook diagnostics", diagnostics_errors = "Validation errors",
+    diagnostics_none = "None", compact_requires_authored = "Select an Authored Matchup Option first.",
+    binding_toggle_book = "Open or close Matchup Book", binding_open_compact = "Open selected compact card",
     profile_resto_shaman = "Restoration Shaman", profile_enhancement_shaman_leveling = "Enhancement Shaman (levelling)",
     profile_slsl_warlock = "SL/SL Warlock", profile_arms_warrior = "Arms Warrior",
     profile_resto_druid = "Restoration Druid", profile_resto_balance_druid = "Restoration/Balance Druid",
@@ -63,6 +67,10 @@ ForeverCounterbook.Locales = {
     briefing_consumables = "Расходники", briefing_reagents = "Реагенты", briefing_abilities = "Ключевые способности",
     briefing_private_checklist = "Личный чек-лист", briefing_checklist_empty = "В личном чек-листе пока нет пунктов.",
     briefing_item_added = "Пункт чек-листа сохранён.", briefing_item_toggled = "Пункт чек-листа обновлён.",
+    ui_updated = "Настройки интерфейса сохранены.", ui_invalid = "Недопустимая настройка интерфейса.",
+    diagnostics_title = "Диагностика Forever Counterbook", diagnostics_errors = "Ошибки проверки",
+    diagnostics_none = "Нет", compact_requires_authored = "Сначала выберите готовый матчап.",
+    binding_toggle_book = "Открыть или закрыть книгу матчапов", binding_open_compact = "Открыть выбранную компактную карточку",
     profile_resto_shaman = "Шаман «Исцеление»", profile_enhancement_shaman_leveling = "Шаман «Совершенствование» (прокачка)",
     profile_slsl_warlock = "Чернокнижник SL/SL", profile_arms_warrior = "Воин «Оружие»",
     profile_resto_druid = "Друид «Исцеление»", profile_resto_balance_druid = "Друид «Исцеление/Баланс»",
@@ -80,4 +88,8 @@ function ForeverCounterbook.Text(key)
   if type(GetLocale) == "function" and ForeverCounterbook.Locales[GetLocale()] then locale = GetLocale() end
   return ForeverCounterbook.Locales[locale][key] or ForeverCounterbook.Locales.enUS[key] or key
 end
+
+BINDING_HEADER_FOREVERCOUNTERBOOK = "Forever Counterbook"
+BINDING_NAME_FCB_TOGGLE_BOOK = ForeverCounterbook.Text("binding_toggle_book")
+BINDING_NAME_FCB_OPEN_COMPACT = ForeverCounterbook.Text("binding_open_compact")
 
