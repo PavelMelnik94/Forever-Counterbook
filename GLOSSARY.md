@@ -119,6 +119,14 @@ _Avoid_: broken addon
 A preparation view combining Player Profile requirements with a private player checklist.
 _Avoid_: gear optimizer
 
+**Briefing Requirement**:
+A profile-authored preparation item in gear, trinkets, consumables, reagents, or key abilities, carrying an Evidence Status and Source when Confirmed.
+_Avoid_: automatic check, personal reminder
+
+**Private Checklist**:
+Player-owned preparation items and completion state for one Player Profile; it is not distributed knowledge or Evidence.
+_Avoid_: Briefing Requirement, telemetry
+
 **Team Plan**:
 A player-authored coordination plan for battleground roles, control chains, and defensive assignments.
 _Avoid_: raid automation

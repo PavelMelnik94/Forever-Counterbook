@@ -1,18 +1,26 @@
 local SavedVariablesStorage = {}
 
-function SavedVariablesStorage.New()
+local function newStorage(key)
   ForeverCounterbookDB = ForeverCounterbookDB or {}
   local storage = {}
 
   function storage:Load()
-    return ForeverCounterbookDB.journal
+    return ForeverCounterbookDB[key]
   end
 
   function storage:Save(state)
-    ForeverCounterbookDB.journal = state
+    ForeverCounterbookDB[key] = state
   end
 
   return storage
+end
+
+function SavedVariablesStorage.New()
+  return newStorage("journal")
+end
+
+function SavedVariablesStorage.NewBriefingChecklist()
+  return newStorage("briefingChecklist")
 end
 
 ForeverCounterbook.SavedVariablesStorage = SavedVariablesStorage

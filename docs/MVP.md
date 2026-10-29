@@ -54,6 +54,15 @@ Committed Player Profiles are Restoration Shaman, Enhancement Shaman as a levell
 - Ability/race behavior is tested with fixtures; bundled ability/race terms stay empty until Source-backed metadata is authored.
 - Compact PvP Card is a future additional mode, not part of this slice.
 
+## PvP Briefing slice
+
+- The selected Matchup Book option shows five profile-aware sections: gear, trinkets, consumables, reagents, and key abilities.
+- Each section is Authored only when requirements exist; otherwise it is explicitly Not Yet Authored.
+- Confirmed Briefing Requirements require a known Source; Assumptions remain visibly labelled.
+- The Private Checklist is stored separately per Player Profile and supports manual add/toggle commands.
+- Bundled Briefing Requirements are currently all Not Yet Authored because no complete source-backed loadout exists for the active profiles.
+- No action-bar, inventory, equipment, aura, cooldown, or combat-state inspection is included.
+
 ## Out of scope
 
 - Reading restricted enemy auras, cooldowns, talents, or protected state.

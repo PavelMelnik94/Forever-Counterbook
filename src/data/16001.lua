@@ -24,6 +24,14 @@ ForeverCounterbook.Data16001 = {
     warlock = { nameKey = "class_warlock", searchTerms = { "warlock", "чернокнижник" }, sourceId = "forever_overview" },
     warrior = { nameKey = "class_warrior", searchTerms = { "warrior", "воин" }, sourceId = "forever_overview" },
   },
+  briefings = {
+    resto_shaman = { requirements = { gear = {}, trinkets = {}, consumables = {}, reagents = {}, abilities = {} } },
+    enhancement_shaman_leveling = { requirements = { gear = {}, trinkets = {}, consumables = {}, reagents = {}, abilities = {} } },
+    slsl_warlock = { requirements = { gear = {}, trinkets = {}, consumables = {}, reagents = {}, abilities = {} } },
+    arms_warrior = { requirements = { gear = {}, trinkets = {}, consumables = {}, reagents = {}, abilities = {} } },
+    resto_druid = { requirements = { gear = {}, trinkets = {}, consumables = {}, reagents = {}, abilities = {} } },
+    resto_balance_druid = { requirements = { gear = {}, trinkets = {}, consumables = {}, reagents = {}, abilities = {} } },
+  },
   sources = {
     project_method = { label = "Project-authored training guidance; gameplay verification pending", kind = "project" },
     dataset_revision_2026_10_29_1 = { label = "Dataset revision 2026.10.29.1 release notes", kind = "project" },

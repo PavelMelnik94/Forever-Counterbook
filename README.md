@@ -27,8 +27,12 @@ The included gameplay prompts are labelled as assumptions or user reflection pro
 7. Run `/fcb book resto_shaman` to open the Matchup Book.
 8. Search with `/fcb search <query>`. Scoped examples: `class:воин`, `ability:<name>`, `race:<name>`, and `patch:1.60.1`.
 9. Run `/fcb open <profile> <class>` to open one Matchup Option directly.
+10. Run `/fcb briefing <profile> <class>` to open the profile-aware PvP Briefing inside the Matchup Book.
+11. Manage the private checklist with `/fcb checklist <profile> add <text>` and `/fcb checklist <profile> toggle <id>`.
 
 The bundled inventory currently declares 54 profile/class options: one Authored card and 53 Not Yet Authored options. Ability and race searches intentionally return no bundled results until sourced metadata is authored.
+
+All bundled Briefing Requirement sections are currently Not Yet Authored. The private checklist is local user state and never becomes distributed Evidence. No action-bar, bag, gear, aura, or combat-state inspection is performed.
 
 ## Develop and verify
 

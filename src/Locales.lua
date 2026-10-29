@@ -1,6 +1,6 @@
 ForeverCounterbook.Locales = {
   enUS = {
-    viewer_hint = "Use /fcb book <profile>, /fcb search <query>, /fcb open <profile> <class>, /fcb note <text>, /fcb notes, or /fcb patch <profile>",
+    viewer_hint = "Use /fcb book <profile>, /fcb search <query>, /fcb briefing <profile> <class>, /fcb checklist <profile> add <text>, or /fcb checklist <profile> toggle <id>",
     journal_open_card_first = "Open a matchup card before writing a note.",
     journal_note_saved = "Matchup note saved.",
     journal_no_notes = "No personal notes for this matchup.",
@@ -22,6 +22,10 @@ ForeverCounterbook.Locales = {
     book_plan = "Battle plan", book_dangers = "Dangers", book_windows = "Power windows", book_sources = "Sources / patch status",
     book_personal_notes = "Personal notes", book_open_hint = "Select a matchup on the left.",
     book_no_confirmed_sources = "No Confirmed Sources are authored for this card.",
+    briefing_title = "PvP Briefing", briefing_gear = "Gear", briefing_trinkets = "Trinkets",
+    briefing_consumables = "Consumables", briefing_reagents = "Reagents", briefing_abilities = "Key abilities",
+    briefing_private_checklist = "Private checklist", briefing_checklist_empty = "No private checklist items.",
+    briefing_item_added = "Checklist item saved.", briefing_item_toggled = "Checklist item updated.",
     profile_resto_shaman = "Restoration Shaman", profile_enhancement_shaman_leveling = "Enhancement Shaman (levelling)",
     profile_slsl_warlock = "SL/SL Warlock", profile_arms_warrior = "Arms Warrior",
     profile_resto_druid = "Restoration Druid", profile_resto_balance_druid = "Restoration/Balance Druid",
@@ -33,7 +37,7 @@ ForeverCounterbook.Locales = {
     matchup_resto_shaman_warrior_2 = "Record which cast or movement decision decided the exchange.",
   },
   ruRU = {
-    viewer_hint = "Команды: /fcb book <профиль>, /fcb search <запрос>, /fcb open <профиль> <класс>, /fcb note <текст>, /fcb notes, /fcb patch <профиль>",
+    viewer_hint = "Команды: /fcb book <профиль>, /fcb search <запрос>, /fcb briefing <профиль> <класс>, /fcb checklist <профиль> add <текст>, /fcb checklist <профиль> toggle <id>",
     journal_open_card_first = "Перед записью заметки откройте карточку матчапа.",
     journal_note_saved = "Заметка о матчапе сохранена.",
     journal_no_notes = "Для этого матчапа пока нет личных заметок.",
@@ -55,6 +59,10 @@ ForeverCounterbook.Locales = {
     book_plan = "План боя", book_dangers = "Опасности", book_windows = "Окна силы", book_sources = "Источники / статус патча",
     book_personal_notes = "Личные заметки", book_open_hint = "Выберите матчап слева.",
     book_no_confirmed_sources = "Для этой карточки ещё нет подтверждённых источников.",
+    briefing_title = "PvP-брифинг", briefing_gear = "Экипировка", briefing_trinkets = "Аксессуары",
+    briefing_consumables = "Расходники", briefing_reagents = "Реагенты", briefing_abilities = "Ключевые способности",
+    briefing_private_checklist = "Личный чек-лист", briefing_checklist_empty = "В личном чек-листе пока нет пунктов.",
+    briefing_item_added = "Пункт чек-листа сохранён.", briefing_item_toggled = "Пункт чек-листа обновлён.",
     profile_resto_shaman = "Шаман «Исцеление»", profile_enhancement_shaman_leveling = "Шаман «Совершенствование» (прокачка)",
     profile_slsl_warlock = "Чернокнижник SL/SL", profile_arms_warrior = "Воин «Оружие»",
     profile_resto_druid = "Друид «Исцеление»", profile_resto_balance_druid = "Друид «Исцеление/Баланс»",

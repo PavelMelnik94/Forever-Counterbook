@@ -12,6 +12,8 @@ The Patch Dataset is declarative Lua loaded by the game. It contains localized t
 
 `MatchupDirectory.Build(dataset)` is the discovery seam. It expands declared profiles and Opponent Classes into deterministic Matchup Options, distinguishes Authored from Not Yet Authored without manufacturing empty cards, and indexes only declared profile, class, ability, race, and patch terms. `MatchupBookView` is the two-panel WoW adapter over that interface.
 
+`PvPBriefing.Build(dataset, profileId, checklistItems)` is the preparation seam. It validates authored requirements and their Evidence/Source rules, emits five explicit Authored or Not Yet Authored sections, and keeps the Private Checklist separate. `BriefingChecklist.New(storage)` owns profile-scoped private state; the SavedVariables adapter maps it only to `ForeverCounterbookDB.briefingChecklist`.
+
 ## Dependency direction
 
 ```text
@@ -27,6 +29,9 @@ Patch Dataset -> PatchIntelligence <- RuntimeInfo
 Patch Dataset -> MatchupDirectory <- tests
                          |
                   MatchupBookView
+Patch Dataset -> PvPBriefing <- BriefingChecklist
+                                      ^
+                         SavedVariables adapter
 ```
 
 The viewer knows the catalog, journal, and Patch Intelligence interfaces; core modules know nothing about frames, locale, or combat APIs. `PatchStatusView` and `RuntimeInfo` contain the WoW-specific presentation and observation details.

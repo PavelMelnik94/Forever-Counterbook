@@ -50,6 +50,12 @@ end
 
 SLASH_FOREVERCOUNTERBOOK1 = "/fcb"
 SlashCmdList.FOREVERCOUNTERBOOK = function(message)
+  local briefingProfile, briefingOpponent = string.match(message or "", "^briefing%s+(%S+)%s+(%S+)$")
+  if briefingProfile then ForeverCounterbook.OpenMatchupOption(string.lower(briefingProfile), string.lower(briefingOpponent)); return end
+  local checklistProfile, checklistText = string.match(message or "", "^checklist%s+(%S+)%s+add%s+(.+)$")
+  if checklistProfile then ForeverCounterbook.AddBriefingChecklistItem(string.lower(checklistProfile), checklistText); return end
+  local toggleProfile, toggleId = string.match(message or "", "^checklist%s+(%S+)%s+toggle%s+(%d+)$")
+  if toggleProfile then ForeverCounterbook.ToggleBriefingChecklistItem(string.lower(toggleProfile), tonumber(toggleId)); return end
   local bookProfile = string.match(message or "", "^book%s+(%S+)$")
   if bookProfile then ForeverCounterbook.ShowMatchupBook(string.lower(bookProfile)); return end
   local searchQuery = string.match(message or "", "^search%s+(.+)$")

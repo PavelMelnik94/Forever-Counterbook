@@ -62,6 +62,8 @@ Forever Counterbook provides a manually opened Matchup Card backed by a versione
 ### PvP Briefing and post-fight flow
 
 - Briefing combines profile-authored requirements with a user checklist.
+- Briefing Requirements and the Private Checklist remain separate data with separate trust semantics.
+- Missing authored requirements are shown as Not Yet Authored, never inferred from the checklist or client state.
 - Any action-bar or Death Recap integration is gated by verified client capability.
 - Post-fight flow accepts manual outcome first and may attach only platform-exposed facts.
 

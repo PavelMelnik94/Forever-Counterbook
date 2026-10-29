@@ -24,9 +24,13 @@ Declare coverage for Restoration Shaman, Enhancement Shaman levelling, SL/SL War
 
 All current Player Profiles have an explicit build or role. Gameplay guidance still requires evidence review before content enters the Patch Dataset.
 
-### Slice 6 — PvP Briefing and permitted post-fight context
+### Slice 6a — profile-aware PvP Briefing (implemented; client smoke test pending)
 
-Add profile preparation checklists, then manual outcome capture and only client-verified Death Recap/action-bar integrations.
+Show evidence-aware profile requirements and a persistent private checklist inside the Matchup Book. All bundled requirements remain Not Yet Authored until sourced.
+
+### Slice 6b — permitted post-fight context
+
+Add manual outcome capture and only client-verified Death Recap integrations. Action-bar inspection remains absent until capability is verified.
 
 ## 1.0
 

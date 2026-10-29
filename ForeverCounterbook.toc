@@ -10,6 +10,8 @@ src/Bootstrap.lua
 src/Locales.lua
 src/MatchupCatalog.lua
 src/MatchupJournal.lua
+src/PvPBriefing.lua
+src/BriefingChecklist.lua
 src/SavedVariablesStorage.lua
 src/PatchIntelligence.lua
 src/MatchupDirectory.lua

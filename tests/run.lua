@@ -4,6 +4,8 @@ dofile("src/MatchupJournal.lua")
 dofile("src/SavedVariablesStorage.lua")
 dofile("src/PatchIntelligence.lua")
 dofile("src/MatchupDirectory.lua")
+dofile("src/PvPBriefing.lua")
+dofile("src/BriefingChecklist.lua")
 local passed, failed = 0, 0
 local function test(name, body)
   local ok, message = pcall(body)
@@ -269,6 +271,126 @@ test("bundled content inventory declares six profiles across nine classes", func
   equal(authored, 1)
   equal(directory:Search("ability:grounding totem")[1], nil)
   equal(directory:Search("race:orc")[1], nil)
+end)
+
+local function briefingDataset()
+  return {
+    profiles = { resto_shaman = { nameKey = "profile_resto_shaman" } },
+    sources = { handbook = { label = "Verified fixture", kind = "test" } },
+    briefings = {
+      resto_shaman = {
+        requirements = {
+          gear = { { textKey = "briefing_fixture_gear", evidence = "confirmed", sourceId = "handbook" } },
+          trinkets = {}, consumables = {}, reagents = {}, abilities = {},
+        },
+      },
+    },
+  }
+end
+
+test("builds a profile-aware Briefing that separates authored requirements from checklist items", function()
+  local briefing, err = ForeverCounterbook.PvPBriefing.Build(briefingDataset(), "resto_shaman", {
+    { id = 1, text = "Repair gear", completed = false },
+  })
+  equal(err, nil)
+  equal(briefing.profileId, "resto_shaman")
+  equal(briefing.sections.gear.status, "authored")
+  equal(briefing.sections.gear.items[1].textKey, "briefing_fixture_gear")
+  equal(briefing.sections.trinkets.status, "not_authored")
+  equal(#briefing.checklist, 1)
+  equal(briefing.checklist[1].text, "Repair gear")
+end)
+
+test("rejects a Confirmed Briefing requirement without a known Source", function()
+  local input = briefingDataset()
+  input.briefings.resto_shaman.requirements.gear[1].sourceId = "missing"
+  local briefing, err = ForeverCounterbook.PvPBriefing.Build(input, "resto_shaman", {})
+  equal(briefing, nil)
+  equal(err.code, "confirmed_requirement_source_missing")
+end)
+
+test("persists private Briefing checklist state per Player Profile", function()
+  local persisted
+  local storage = {
+    Load = function() return persisted end,
+    Save = function(_, state) persisted = state end,
+  }
+  local profiles = { resto_shaman = {}, arms_warrior = {} }
+  local checklist = ForeverCounterbook.BriefingChecklist.New(storage, profiles)
+  local item, addError = checklist:Add("resto_shaman", "Repair gear")
+  equal(addError, nil)
+  equal(item.completed, false)
+  local toggled, toggleError = checklist:Toggle("resto_shaman", item.id)
+  equal(toggleError, nil)
+  equal(toggled.completed, true)
+
+  local reloaded = ForeverCounterbook.BriefingChecklist.New(storage, profiles)
+  equal(reloaded:GetItems("resto_shaman")[1].completed, true)
+  equal(#reloaded:GetItems("arms_warrior"), 0)
+end)
+
+test("SavedVariables adapter restores the private Briefing checklist", function()
+  ForeverCounterbookDB = nil
+  local profiles = { resto_shaman = {} }
+  local first = ForeverCounterbook.BriefingChecklist.New(ForeverCounterbook.SavedVariablesStorage.NewBriefingChecklist(), profiles)
+  first:Add("resto_shaman", "Bring water")
+  local second = ForeverCounterbook.BriefingChecklist.New(ForeverCounterbook.SavedVariablesStorage.NewBriefingChecklist(), profiles)
+  equal(second:GetItems("resto_shaman")[1].text, "Bring water")
+end)
+
+test("rejects orphan checklist profiles and malformed persisted items", function()
+  local persisted
+  local storage = { Load = function() return persisted end, Save = function(_, state) persisted = state end }
+  local checklist = ForeverCounterbook.BriefingChecklist.New(storage, { resto_shaman = {} })
+  local item, err = checklist:Add("unknown_profile", "Orphan item")
+  equal(item, nil)
+  equal(err.code, "unknown_profile")
+  equal(persisted, nil)
+
+  persisted = { schemaVersion = 1, nextId = 2, itemsByProfile = { resto_shaman = { {} } } }
+  local invalid, invalidError = ForeverCounterbook.BriefingChecklist.New(storage, { resto_shaman = {} })
+  equal(invalid, nil)
+  equal(invalidError.code, "invalid_checklist_state")
+
+  persisted = {
+    schemaVersion = 1, nextId = 1,
+    itemsByProfile = { resto_shaman = { [2] = { id = 1, text = "Gap", completed = false } } },
+  }
+  local sparse, sparseError = ForeverCounterbook.BriefingChecklist.New(storage, { resto_shaman = {} })
+  equal(sparse, nil)
+  equal(sparseError.code, "invalid_checklist_state")
+
+  persisted = {
+    schemaVersion = 1, nextId = 1,
+    itemsByProfile = { resto_shaman = { { id = 1, text = "Duplicate next id", completed = false } } },
+  }
+  local duplicate, duplicateError = ForeverCounterbook.BriefingChecklist.New(storage, { resto_shaman = {} })
+  equal(duplicate, nil)
+  equal(duplicateError.code, "invalid_checklist_state")
+end)
+
+test("rejects malformed authored Briefing requirements", function()
+  local input = briefingDataset()
+  input.briefings.resto_shaman.requirements.gear[1].textKey = nil
+  local briefing, err = ForeverCounterbook.PvPBriefing.Build(input, "resto_shaman", {})
+  equal(briefing, nil)
+  equal(err.code, "invalid_requirement")
+
+  input = briefingDataset()
+  input.briefings.resto_shaman.requirements.gear = { unexpected = { textKey = "bad", evidence = "assumption" } }
+  local invalidContainer, containerError = ForeverCounterbook.PvPBriefing.Build(input, "resto_shaman", {})
+  equal(invalidContainer, nil)
+  equal(containerError.code, "invalid_requirement_container")
+end)
+
+test("bundled Briefings stay explicitly not authored for all active profiles", function()
+  for profileId in pairs(ForeverCounterbook.Data16001.profiles) do
+    local briefing, err = ForeverCounterbook.PvPBriefing.Build(ForeverCounterbook.Data16001, profileId, {})
+    equal(err, nil)
+    for _, sectionId in ipairs({ "gear", "trinkets", "consumables", "reagents", "abilities" }) do
+      equal(briefing.sections[sectionId].status, "not_authored")
+    end
+  end
 end)
 
 print(string.format("%d passed, %d failed", passed, failed)); if failed > 0 then os.exit(1) end

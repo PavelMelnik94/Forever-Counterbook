@@ -1,6 +1,12 @@
 local directory, directoryError = ForeverCounterbook.MatchupDirectory.Build(ForeverCounterbook.Data16001)
 ForeverCounterbook.Directory = directory
 ForeverCounterbook.DirectoryError = directoryError
+local checklist, checklistError = ForeverCounterbook.BriefingChecklist.New(
+  ForeverCounterbook.SavedVariablesStorage.NewBriefingChecklist(),
+  ForeverCounterbook.Data16001.profiles
+)
+ForeverCounterbook.BriefingChecklistState = checklist
+ForeverCounterbook.BriefingChecklistError = checklistError
 
 local frame
 local optionButtons = {}
@@ -8,6 +14,36 @@ local activeProfile = "resto_shaman"
 local currentOptions = {}
 local currentPage = 1
 local PAGE_SIZE = 9
+local selectedOption
+
+local function appendBriefing(lines, profileId)
+  local briefing, err = ForeverCounterbook.PvPBriefing.Build(
+    ForeverCounterbook.Data16001,
+    profileId,
+    checklist and checklist:GetItems(profileId) or {}
+  )
+  table.insert(lines, "\n" .. ForeverCounterbook.Text("briefing_title") .. ":")
+  if not briefing then table.insert(lines, "Forever Counterbook: " .. err.code); return end
+  for _, sectionId in ipairs({ "gear", "trinkets", "consumables", "reagents", "abilities" }) do
+    local section = briefing.sections[sectionId]
+    table.insert(lines, ForeverCounterbook.Text("briefing_" .. sectionId) .. ":")
+    if section.status == "not_authored" then
+      table.insert(lines, "- " .. ForeverCounterbook.Text("book_not_authored"))
+    else
+      for _, item in ipairs(section.items) do
+        local source = item.sourceId and ForeverCounterbook.Data16001.sources[item.sourceId]
+        local sourceLabel = source and (" — " .. source.label) or ""
+        table.insert(lines, "- [" .. ForeverCounterbook.Text("evidence_" .. item.evidence) .. "] " .. ForeverCounterbook.Text(item.textKey) .. sourceLabel)
+      end
+    end
+  end
+  table.insert(lines, ForeverCounterbook.Text("briefing_private_checklist") .. ":")
+  if next(briefing.checklist) == nil then table.insert(lines, "- " .. ForeverCounterbook.Text("briefing_checklist_empty")) end
+  for _, item in ipairs(briefing.checklist) do
+    local marker = item.completed and "[x]" or "[ ]"
+    table.insert(lines, marker .. " #" .. item.id .. " " .. item.text)
+  end
+end
 
 local function labelForProfile(profileId)
   local profile = ForeverCounterbook.Data16001.profiles[profileId]
@@ -78,10 +114,16 @@ local function ensureFrame()
 end
 
 local function renderOption(option)
+  selectedOption = option
   local view = ensureFrame()
   view.cardTitle:SetText(labelForProfile(option.profileId) .. " vs " .. labelForClass(option.opponentClass))
   if option.status == "missing" then
-    view.cardBody:SetText(ForeverCounterbook.Text("book_not_authored") .. "\n\n" .. ForeverCounterbook.Text("patch_status_dataset") .. ": " .. ForeverCounterbook.Data16001.datasetRevision)
+    local missingLines = {
+      ForeverCounterbook.Text("book_not_authored"),
+      "\n" .. ForeverCounterbook.Text("patch_status_dataset") .. ": " .. ForeverCounterbook.Data16001.datasetRevision,
+    }
+    appendBriefing(missingLines, option.profileId)
+    view.cardBody:SetText(table.concat(missingLines, "\n"))
     return
   end
 
@@ -113,6 +155,7 @@ local function renderOption(option)
   local notes = ForeverCounterbook.Journal:GetNotes(option.key)
   if next(notes) == nil then table.insert(lines, ForeverCounterbook.Text("journal_no_notes")) end
   for index, note in ipairs(notes) do table.insert(lines, index .. ". " .. note.text) end
+  appendBriefing(lines, option.profileId)
   view.cardBody:SetText(table.concat(lines, "\n"))
 end
 
@@ -161,4 +204,20 @@ function ForeverCounterbook.OpenMatchupOption(profileId, opponentClass)
   local option, err = directory:Resolve(profileId, opponentClass)
   if not option then DEFAULT_CHAT_FRAME:AddMessage("Forever Counterbook: " .. err.code); return end
   ForeverCounterbook.ShowMatchupBook(profileId); renderOption(option)
+end
+
+function ForeverCounterbook.AddBriefingChecklistItem(profileId, text)
+  if not checklist then DEFAULT_CHAT_FRAME:AddMessage("Forever Counterbook: " .. checklistError.code); return end
+  local _, err = checklist:Add(profileId, text)
+  if err then DEFAULT_CHAT_FRAME:AddMessage("Forever Counterbook: " .. err.code); return end
+  DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("briefing_item_added"))
+  if selectedOption and selectedOption.profileId == profileId then renderOption(selectedOption) end
+end
+
+function ForeverCounterbook.ToggleBriefingChecklistItem(profileId, itemId)
+  if not checklist then DEFAULT_CHAT_FRAME:AddMessage("Forever Counterbook: " .. checklistError.code); return end
+  local _, err = checklist:Toggle(profileId, itemId)
+  if err then DEFAULT_CHAT_FRAME:AddMessage("Forever Counterbook: " .. err.code); return end
+  DEFAULT_CHAT_FRAME:AddMessage(ForeverCounterbook.Text("briefing_item_toggled"))
+  if selectedOption and selectedOption.profileId == profileId then renderOption(selectedOption) end
 end
