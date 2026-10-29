@@ -10,6 +10,7 @@ The addon is not a DR tracker, cooldown bar, kill feed, damage meter, enemy-stat
 - Explicit `Confirmed`, `User Note`, and `Assumption` evidence statuses.
 - English and Russian locale foundation.
 - Minimal in-game viewer for the illustrative Restoration Shaman vs Warrior card.
+- Manually saved Matchup Journal notes backed by SavedVariables.
 - Offline Lua syntax and catalog behavior checks.
 
 The included gameplay prompts are labelled as assumptions or user reflection prompts; they are not yet verified matchup claims.
@@ -20,12 +21,13 @@ The included gameplay prompts are labelled as assumptions or user reflection pro
 2. Ensure `ForeverCounterbook.toc` is directly inside that folder.
 3. Start or reload the WoW: Forever 1.60.1 client and enable **Forever Counterbook**.
 4. Run `/fcb resto_shaman warrior`.
+5. Run `/fcb note <text>` to save a note for the open card and `/fcb notes` to read its notes.
 
 ## Develop and verify
 
 Node.js is needed only for checks, not by the addon: `npm install`, then `npm run check`.
 
-See [MVP specification](docs/MVP.md), [architecture](docs/ARCHITECTURE.md), [domain language](GLOSSARY.md), and [contributing conventions](CONTRIBUTING.md).
+See the [Product Brief](docs/product/BRIEF.md), [PRD](docs/product/PRD.md), [MVP specification](docs/MVP.md), [architecture](docs/ARCHITECTURE.md), [ticket plan](docs/TICKETS.md), [domain language](GLOSSARY.md), and [contributing conventions](CONTRIBUTING.md).
 
 ## Privacy, monetization, and support
 

@@ -6,15 +6,20 @@
 
 The Patch Dataset is declarative Lua loaded by the game. It contains localized text keys rather than executable behavior. `CardView` is the first WoW adapter. It translates a slash command into a catalog lookup and renders only declared card content. It does not inspect combat state. Locales are another adapter selected by the client locale with English fallback.
 
+`MatchupJournal.New(storage)` is the personal-learning seam. It owns Journal Entry validation, identifiers, filtering, and serializable state. The SavedVariables adapter maps that state to `ForeverCounterbookDB.journal`; tests use an in-memory adapter. Neither adapter contains journal rules.
+
 ## Dependency direction
 
 ```text
 Patch Dataset -> MatchupCatalog <- tests
                          ^
 Locales ----------> CardView <- WoW UI / slash command
+MatchupJournal <--- CardView
+      ^
+SavedVariables adapter / in-memory test adapter
 ```
 
-The viewer knows the catalog interface; the catalog knows nothing about frames, saved variables, locale, or combat APIs. Journal storage and dataset-change summaries should become separate modules that reference stable profile and matchup keys.
+The viewer knows the catalog and journal interfaces; both core modules know nothing about frames, locale, or combat APIs. Dataset-change summaries should become a separate module referencing stable profile and matchup keys.
 
 ## Data evolution
 

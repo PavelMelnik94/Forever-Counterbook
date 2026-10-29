@@ -1,5 +1,7 @@
 ForeverCounterbook = {}
 dofile("src/MatchupCatalog.lua")
+dofile("src/MatchupJournal.lua")
+dofile("src/SavedVariablesStorage.lua")
 local passed, failed = 0, 0
 local function test(name, body)
   local ok, message = pcall(body)
@@ -34,6 +36,35 @@ test("keeps assumptions explicit and loadable", function()
   local input = dataset(); input.matchups["resto_shaman:warrior"].countermeasures[1] = { textKey = "hypothesis", evidence = "assumption" }
   local catalog, err = ForeverCounterbook.MatchupCatalog.Load(input)
   equal(err, nil); equal(catalog:GetCard("resto_shaman", "warrior").countermeasures[1].evidence, "assumption")
+end)
+
+test("persists a Matchup Journal note across a reload", function()
+  local persisted
+  local storage = {
+    Load = function() return persisted end,
+    Save = function(_, state) persisted = state end,
+  }
+  local journal = ForeverCounterbook.MatchupJournal.New(storage)
+  local entry, err = journal:AddNote("resto_shaman:warrior", "Stop starting a long cast before closing distance.")
+  equal(err, nil)
+  equal(entry.id, 1)
+
+  local reloaded = ForeverCounterbook.MatchupJournal.New(storage)
+  local notes = reloaded:GetNotes("resto_shaman:warrior")
+  equal(#notes, 1)
+  equal(notes[1].text, "Stop starting a long cast before closing distance.")
+  equal(notes[1].matchupKey, "resto_shaman:warrior")
+end)
+
+test("SavedVariables adapter restores notes for a new Journal instance", function()
+  ForeverCounterbookDB = nil
+  local firstStorage = ForeverCounterbook.SavedVariablesStorage.New()
+  local firstJournal = ForeverCounterbook.MatchupJournal.New(firstStorage)
+  firstJournal:AddNote("resto_shaman:warrior", "Save Grounding Totem for the planned spell.")
+
+  local secondStorage = ForeverCounterbook.SavedVariablesStorage.New()
+  local secondJournal = ForeverCounterbook.MatchupJournal.New(secondStorage)
+  equal(secondJournal:GetNotes("resto_shaman:warrior")[1].text, "Save Grounding Totem for the planned spell.")
 end)
 print(string.format("%d passed, %d failed", passed, failed)); if failed > 0 then os.exit(1) end
 

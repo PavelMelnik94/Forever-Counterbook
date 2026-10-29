@@ -4,17 +4,42 @@
 
 Load and validate one Patch Dataset, then display one localized Matchup Card without live-combat dependencies.
 
-## Slice 2 — manual Matchup Journal
+## MVP
+
+### Slice 2 — manual Matchup Journal (current)
 
 Let the player open the current card, manually record one observation or mistake, persist it in `ForeverCounterbookDB`, and read it back. Test the journal module through a storage interface using an in-memory adapter; smoke-test the SavedVariables adapter in game.
 
-## Slice 3 — profile-aware dataset changes
+### Slice 3 — structured journal history
+
+Add manual Encounter Result, cause, Mistake Tags, history, and local summaries, followed by explicit export/import.
+
+### Slice 4 — profile-aware dataset changes
 
 Compare the previously seen dataset revision with the bundled revision and show a short, authored “what changed for my Player Profile” summary. Do not infer changes by diffing prose at runtime.
 
-## Slice 4 — content breadth
+### Slice 5 — MVP content breadth and search
 
-Add the remaining eight Restoration Shaman cards, then the nine SL/SL Warlock and nine Holy Paladin cards. Every Confirmed Countermeasure must cite an accepted Source; unresolved gameplay claims remain Assumptions.
+Add cards for Restoration Shaman, Enhancement Shaman levelling, SL/SL Warlock, Arms Warrior PvP damage, Restoration Druid, and Restoration/Balance Druid, then manual search and compact/full card views. Every Confirmed Countermeasure must cite an accepted Source.
+
+All current Player Profiles have an explicit build or role. Gameplay guidance still requires evidence review before content enters the Patch Dataset.
+
+### Slice 6 — PvP Briefing and permitted post-fight context
+
+Add profile preparation checklists, then manual outcome capture and only client-verified Death Recap/action-bar integrations.
+
+## 1.0
+
+- Cover all nine classes and relevant races after profile decisions.
+- Add extended local statistics and polished accessible UI.
+
+## 1.x
+
+- Add Team Plans, permitted addon-channel sharing, and WSG/AB/AV/Darkspear Islands scenarios.
+
+## 2.0
+
+- Add source-validated community Knowledge Packs with explicit compatibility and trust rules.
 
 ## Release readiness
 

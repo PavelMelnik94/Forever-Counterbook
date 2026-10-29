@@ -8,14 +8,14 @@ It is not a diminishing-returns tracker, cooldown bar, kill feed, damage meter, 
 
 ## Initial audience and coverage
 
-Player Profiles: Restoration Shaman (with an eventual Enhancement levelling view), SL/SL Warlock (Affliction + Demonology), and Holy Paladin. The content milestone is one Matchup Card per Player Profile against each of the nine Opponent Classes. This first vertical slice deliberately ships one illustrative, non-confirmed `Restoration Shaman vs Warrior` card so the data contract and viewer can be exercised before gameplay claims are authored.
+Committed Player Profiles are Restoration Shaman, Enhancement Shaman as a levelling profile, SL/SL Warlock (Affliction + Demonology), Arms Warrior as a PvP damage profile, Restoration Druid, and Restoration/Balance Druid. The future 1.0 target covers all nine classes.
 
 ## MVP capabilities
 
 1. Load exactly one declared Patch Dataset and reject incompatible or misleading data.
 2. Browse a Matchup Card before combat in Russian or English.
 3. Display the Evidence Status beside every Countermeasure.
-4. Add private Matchup Journal entries manually after a duel or death; never infer unavailable events.
+4. Add private Matchup Journal entries manually, persist them through reload, and read them from the relevant card; never infer unavailable events.
 5. Show a short, dataset-authored change summary for the active Player Profile after a dataset update.
 6. Store data locally, collect no telemetry, and provide no paid or premium capability.
 
@@ -28,6 +28,14 @@ Player Profiles: Restoration Shaman (with an eventual Enhancement levelling view
 - Unsupported schemas, unknown Evidence Status values, mismatched card keys, and Confirmed items without a known Source are rejected with structured errors.
 - Lua syntax and catalog behavior are checkable outside WoW with `npm run check`.
 
+## Matchup Journal slice
+
+- The user opens a Matchup Card, runs `/fcb note <text>`, and receives a saved confirmation.
+- `/fcb notes` lists notes for the currently open card.
+- A new Journal instance over the same SavedVariables state returns the saved note.
+- The core Journal is tested through its public interface using in-memory storage.
+- No outcome, tags, statistics, combat-event detection, or automatic post-fight prompt is included in this slice.
+
 ## Out of scope
 
 - Reading restricted enemy auras, cooldowns, talents, or protected state.
@@ -39,7 +47,6 @@ Player Profiles: Restoration Shaman (with an eventual Enhancement levelling view
 ## Open product decisions
 
 - Which primary evidence is sufficient to mark gameplay advice Confirmed.
-- Whether Enhancement becomes a separate Player Profile or a levelling mode of Restoration Shaman.
 - Journal retention and export format.
 - External support-page URL.
 

@@ -9,6 +9,8 @@
 src/Bootstrap.lua
 src/Locales.lua
 src/MatchupCatalog.lua
+src/MatchupJournal.lua
+src/SavedVariablesStorage.lua
 src/data/16001.lua
 src/CardView.lua
 
